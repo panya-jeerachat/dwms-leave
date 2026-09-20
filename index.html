@@ -27,6 +27,8 @@
   --pu1:#745CE9; --pu2:#9C75F6; --pu-soft:#EFEBFE;
   --ease:cubic-bezier(.22,.9,.3,1);
   --shadow:0 10px 30px rgba(38,38,38,.06);
+  --ov:rgba(38,38,38,.06);
+  color-scheme:light;
   box-sizing:border-box;
   padding-top:env(safe-area-inset-top,0px);
   padding-bottom:env(safe-area-inset-bottom,0px);
@@ -40,6 +42,39 @@ body{
 }
 img{max-width:100%}
 a{color:inherit}
+
+/* ===================================================================
+   ธีมมืด — ใช้ตัวแปรชุดเดียวกัน เปลี่ยนเฉพาะค่าสีพื้นและสีตัวอักษร
+   สีประจำแบรนด์คงเดิม แต่สีพื้นอ่อน (*-soft) เปลี่ยนเป็นโปร่งแสง
+   เพื่อให้เห็นเป็นเฉดบนพื้นมืดแทนที่จะสว่างจ้า
+   =================================================================== */
+:root[data-theme="dark"]{
+  --bg:#141417; --surface:#1D1D21; --soft:#26262C;
+  --text:#EDEDEA; --text2:#A6A6A2; --muted:#878783; --border:#33333A;
+  --o-soft:rgba(255,138,36,.18);
+  --pk-soft:rgba(237,67,139,.20);
+  --bl-soft:rgba(55,123,234,.20);
+  --gr-soft:rgba(38,185,110,.20);
+  --tl-soft:rgba(32,191,193,.20);
+  --pu-soft:rgba(116,92,233,.24);
+  --shadow:0 10px 30px rgba(0,0,0,.34);
+  --ov:rgba(0,0,0,.3);
+  color-scheme:dark;
+}
+/* ปรับส่วนที่กำหนดสีไว้ตรง ๆ ให้เข้ากับพื้นมืด */
+:root[data-theme="dark"] .nav{background:rgba(29,29,33,.9)}
+:root[data-theme="dark"] .cta-btn{background:#EDEDEA;color:#3B2BA8}
+:root[data-theme="dark"] .rate-word.w3{color:#E8C24A}
+:root[data-theme="dark"] .rate-msg.ok{color:#5FD79A}
+:root[data-theme="dark"] .rate-msg.bad{color:#FF8FA6}
+:root[data-theme="dark"] .err{background:rgba(237,67,139,.18);color:#FF9DB4}
+:root[data-theme="dark"] .t-pk{color:#FF9DC0}
+:root[data-theme="dark"] .t-pu{color:#B7A3FF}
+:root[data-theme="dark"] .t-tl{color:#6FE3DD}
+:root[data-theme="dark"] .t-bl{color:#8FC0FF}
+:root[data-theme="dark"] .t-gr{color:#6FE0A5}
+:root[data-theme="dark"] .star svg{fill:#3A3A42}
+:root[data-theme="dark"] .sk{background:linear-gradient(90deg,#26262C 25%,#32323A 50%,#26262C 75%);background-size:200% 100%}
 
 /* ---------- แถบเมนูด้านบน ---------- */
 .nav{
@@ -76,6 +111,18 @@ a{color:inherit}
 .btn-login:hover{background:linear-gradient(135deg,var(--pu1),var(--bl1))!important;transform:translateY(-3px);box-shadow:0 12px 26px rgba(116,92,233,.36)}
 .btn-login:active{transform:scale(.97)}
 .btn-login svg{width:17px;height:17px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.theme-btn{
+  display:inline-flex;align-items:center;gap:7px;background:var(--surface);
+  border:1px solid var(--border);border-radius:999px;padding:8px 14px;cursor:pointer;
+  font-family:'Sarabun';font-size:13.2px;font-weight:600;color:var(--text2);
+  transition:all .18s var(--ease);white-space:nowrap;
+}
+.theme-btn:hover{border-color:var(--pu1);color:var(--pu1);transform:translateY(-2px)}
+.theme-btn:active{transform:scale(.96)}
+.theme-btn svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;display:none}
+.theme-btn[data-mode="light"] .ic-sun,
+.theme-btn[data-mode="dark"] .ic-moon,
+.theme-btn[data-mode="auto"] .ic-auto{display:block}
 .nav-toggle{display:none;margin-left:auto;background:none;border:1px solid var(--border);border-radius:11px;padding:9px;cursor:pointer}
 .nav-toggle svg{width:20px;height:20px;stroke:var(--text);fill:none;stroke-width:2;stroke-linecap:round}
 
@@ -270,6 +317,53 @@ footer{border-top:1px solid var(--border);background:var(--surface);margin-top:4
 .cal-dow{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:6px}
 .cal-dow span{text-align:center;font-size:12.5px;color:var(--muted);padding:4px 0}
 .cal-dow .we{color:var(--pk1)}
+/* ---------- เครื่องมือค้นหาในปฏิทิน ---------- */
+.cal-find{
+  display:inline-flex;align-items:center;gap:6px;border:1px solid var(--border);
+  background:var(--surface);color:var(--text2);border-radius:999px;padding:7px 15px;
+  cursor:pointer;font-family:'Sarabun';font-size:13px;font-weight:600;
+  transition:all .18s var(--ease);margin-left:auto;
+}
+.cal-find:hover{border-color:var(--tl1);color:#118183;transform:translateY(-2px)}
+.cal-find.on{background:var(--tl-soft);border-color:var(--tl1);color:#118183}
+.cal-find svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round}
+.cal-find-panel{display:none;background:var(--soft);border-radius:16px;padding:14px;margin-bottom:14px}
+.cal-find-panel.show{display:block;animation:ddIn .18s ease}
+.cf-row{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end}
+.cf-row label{display:flex;flex-direction:column;gap:5px;font-size:12.4px;color:var(--text2);font-weight:600}
+.cf-row input,.cf-row select{
+  border:1px solid var(--border);border-radius:11px;padding:8px 11px;background:var(--surface);
+  color:var(--text);font-family:'Sarabun';font-size:13.5px;outline:none;
+}
+.cf-row input:focus,.cf-row select:focus{border-color:var(--tl1);box-shadow:0 0 0 3px rgba(32,191,193,.16)}
+.cf-quick{display:flex;gap:6px;flex-wrap:wrap;align-self:flex-end}
+.cf-quick button{
+  border:1px dashed var(--border);background:transparent;border-radius:999px;padding:7px 13px;
+  cursor:pointer;font-family:'Sarabun';font-size:12.4px;color:var(--text2);transition:all .16s
+}
+.cf-quick button:hover{border-style:solid;border-color:var(--tl1);color:#118183}
+.cf-go,.cf-clear{
+  border:0;border-radius:11px;padding:9px 20px;cursor:pointer;
+  font-family:'Mitr';font-weight:500;font-size:13.5px;transition:all .18s var(--ease);
+}
+.cf-go{background:linear-gradient(135deg,var(--tl1),var(--tl2));color:#fff;box-shadow:0 7px 18px rgba(32,191,193,.3)}
+.cf-go:hover{transform:translateY(-2px)}
+.cf-clear{background:var(--surface);border:1px solid var(--border);color:var(--text2)}
+.cf-clear:hover{border-color:var(--pk1);color:#C62A6B}
+.cf-result{margin-top:13px}
+.cf-sum{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:11px}
+.cf-sum>div{flex:1;min-width:118px;background:var(--surface);border:1px solid var(--border);
+  border-radius:13px;padding:10px 12px;text-align:center}
+.cf-sum span{display:block;font-family:'Mitr';font-weight:600;font-size:21px;color:var(--text);line-height:1.3}
+.cf-sum small{font-size:12px;color:var(--text2)}
+.cf-list{max-height:250px;overflow:auto;background:var(--surface);border:1px solid var(--border);border-radius:13px}
+.cf-item{display:flex;align-items:center;gap:11px;padding:9px 13px;border-bottom:1px solid var(--soft);font-size:13.3px}
+.cf-item:last-child{border-bottom:0}
+.cf-item b{font-family:'Mitr';font-weight:500;min-width:132px}
+.cf-item .n{margin-left:auto;font-family:'Mitr';font-weight:600}
+.cf-dot{width:9px;height:9px;border-radius:50%;flex:0 0 auto}
+.cf-empty{padding:22px;text-align:center;color:var(--muted);font-size:13.3px}
+
 .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
 .cd{
   aspect-ratio:1/1;border-radius:14px;background:var(--soft);border:1px solid transparent;
@@ -452,6 +546,12 @@ footer{border-top:1px solid var(--border);background:var(--surface);margin-top:4
       <a href="#holidays">วันหยุดราชการ</a>
       <a href="#apply">ยื่นใบลา</a>
       <a href="#kpi">ตัวชี้วัด</a>
+      <button type="button" class="theme-btn" id="themeBtn" title="สลับธีมสี" aria-label="สลับธีมสี">
+        <svg class="ic-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.4"/><path d="M12 2v2.4M12 19.6V22M2 12h2.4M19.6 12H22M4.6 4.6l1.7 1.7M17.7 17.7l1.7 1.7M19.4 4.6l-1.7 1.7M6.3 17.7l-1.7 1.7"/></svg>
+        <svg class="ic-moon" viewBox="0 0 24 24"><path d="M20.5 14.5A8.6 8.6 0 0 1 9.5 3.5a8.6 8.6 0 1 0 11 11z"/></svg>
+        <svg class="ic-auto" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 3v18a9 9 0 0 0 0-18z" fill="currentColor" stroke="none"/></svg>
+        <span id="themeTxt">ตามระบบ</span>
+      </button>
       <a class="btn-login" id="loginTop" href="#">
         <svg viewBox="0 0 24 24"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3"/></svg>
         เข้าสู่ระบบ
@@ -528,6 +628,35 @@ footer{border-top:1px solid var(--border);background:var(--surface);margin-top:4
           <i class="lg lg-a"></i>อนุมัติแล้ว
           <i class="lg lg-p"></i>รออนุมัติ
         </span>
+        <button type="button" class="cal-find" id="calFindBtn">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+          ค้นหาตามช่วงเวลา
+        </button>
+      </div>
+
+      <!-- เครื่องมือค้นหาตามช่วงวันที่และสถานะ -->
+      <div class="cal-find-panel" id="calFind">
+        <div class="cf-row">
+          <label>ตั้งแต่วันที่<input type="date" id="cfFrom"></label>
+          <label>ถึงวันที่<input type="date" id="cfTo"></label>
+          <label>สถานะ
+            <select id="cfStatus">
+              <option value="all">ทั้งหมด</option>
+              <option value="a">อนุมัติแล้ว</option>
+              <option value="p">รออนุมัติ</option>
+            </select>
+          </label>
+          <div class="cf-quick">
+            <button type="button" data-q="7">7 วันล่าสุด</button>
+            <button type="button" data-q="30">30 วัน</button>
+            <button type="button" data-q="month">เดือนนี้</button>
+            <button type="button" data-q="fiscal">ปีงบประมาณนี้</button>
+          </div>
+          <div style="flex:1"></div>
+          <button type="button" class="cf-go" id="cfGo">ค้นหา</button>
+          <button type="button" class="cf-clear" id="cfClear">ล้าง</button>
+        </div>
+        <div class="cf-result" id="cfResult"></div>
       </div>
 
       <div class="cal-dow">
@@ -1171,6 +1300,138 @@ $('rateSend').addEventListener('click', function(){
   }, 12000);
 });
 
+/* ===================================================================
+   ธีมสี — สว่าง / มืด / ตามการตั้งค่าของเครื่อง
+   โหมด auto จะเปลี่ยนตามระบบปฏิบัติการทันทีที่ผู้ใช้สลับ โดยไม่ต้องรีเฟรช
+   =================================================================== */
+var THEME_KEY='enmsu-theme';
+var themeMode='auto';
+var mq=window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
+
+function applyTheme(){
+  var dark = (themeMode==='dark') || (themeMode==='auto' && mq && mq.matches);
+  document.documentElement.setAttribute('data-theme', dark?'dark':'light');
+  var b=$('themeBtn');
+  if(b){
+    b.setAttribute('data-mode', themeMode);
+    $('themeTxt').textContent = themeMode==='auto' ? 'ตามระบบ' : (themeMode==='dark' ? 'ธีมมืด' : 'ธีมสว่าง');
+    b.title = 'ธีมสี: ' + $('themeTxt').textContent + ' (กดเพื่อสลับ)';
+  }
+}
+
+function initTheme(){
+  try{ themeMode = localStorage.getItem(THEME_KEY) || 'auto'; }catch(e){ themeMode='auto'; }
+  if(['auto','light','dark'].indexOf(themeMode)<0) themeMode='auto';
+  applyTheme();
+  if(mq){
+    var onChange=function(){ if(themeMode==='auto') applyTheme(); };
+    if(mq.addEventListener) mq.addEventListener('change',onChange);
+    else if(mq.addListener) mq.addListener(onChange);
+  }
+  var b=$('themeBtn');
+  if(b) b.addEventListener('click',function(){
+    themeMode = (themeMode==='auto') ? 'light' : (themeMode==='light' ? 'dark' : 'auto');
+    try{ localStorage.setItem(THEME_KEY, themeMode); }catch(e){}
+    applyTheme();
+  });
+}
+
+/* ===================================================================
+   ค้นหาในปฏิทินตามช่วงวันที่และสถานะ
+   =================================================================== */
+function ymd(d){
+  return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2);
+}
+function parseYmd(t){
+  var p=String(t||'').split('-');
+  return (p.length===3) ? new Date(Number(p[0]),Number(p[1])-1,Number(p[2])) : null;
+}
+
+function initCalFind(){
+  var panel=$('calFind'), btn=$('calFindBtn');
+  if(!panel||!btn) return;
+
+  btn.addEventListener('click',function(){
+    var on=panel.classList.toggle('show');
+    btn.classList.toggle('on',on);
+    if(on&&!$('cfFrom').value) setQuick('month');
+  });
+
+  Array.prototype.forEach.call(panel.querySelectorAll('.cf-quick button'),function(q){
+    q.addEventListener('click',function(){ setQuick(q.getAttribute('data-q')); runFind(); });
+  });
+  $('cfGo').addEventListener('click',runFind);
+  $('cfClear').addEventListener('click',function(){
+    $('cfFrom').value=''; $('cfTo').value=''; $('cfStatus').value='all';
+    $('cfResult').innerHTML='';
+  });
+  $('cfStatus').addEventListener('change',function(){ if($('cfFrom').value) runFind(); });
+}
+
+function setQuick(kind){
+  var now=CAL.today ? parseYmd(CAL.today) : new Date();
+  var from,to;
+  if(kind==='7'){ to=now; from=new Date(now.getFullYear(),now.getMonth(),now.getDate()-6); }
+  else if(kind==='30'){ to=now; from=new Date(now.getFullYear(),now.getMonth(),now.getDate()-29); }
+  else if(kind==='month'){ from=new Date(now.getFullYear(),now.getMonth(),1); to=new Date(now.getFullYear(),now.getMonth()+1,0); }
+  else{
+    /* ปีงบประมาณ: 1 ต.ค. ถึง 30 ก.ย. */
+    var fy=(now.getMonth()+1>=10)?now.getFullYear()+1:now.getFullYear();
+    from=new Date(fy-1,9,1); to=new Date(fy,8,30);
+  }
+  $('cfFrom').value=ymd(from);
+  $('cfTo').value=ymd(to);
+}
+
+function runFind(){
+  var box=$('cfResult');
+  var from=$('cfFrom').value, to=$('cfTo').value, st=$('cfStatus').value;
+  if(!from||!to){ box.innerHTML='<div class="cf-empty">กรุณาเลือกทั้งวันเริ่มต้นและวันสิ้นสุด</div>'; return; }
+  if(from>to){ var t=from; from=to; to=t; $('cfFrom').value=from; $('cfTo').value=to; }
+
+  var days=CAL.data||{};
+  var rows=[], sumA=0, sumP=0, spanDays=0;
+  var cur=parseYmd(from), end=parseYmd(to), guard=0;
+  while(cur<=end && guard++<800){
+    var key=ymd(cur);
+    spanDays++;
+    var d=days[key];
+    if(d){
+      var a=d.a||0, p=d.p||0;
+      var use=(st==='a')?a:((st==='p')?p:(a+p));
+      if(use>0){ rows.push({date:key,a:a,p:p,n:use}); sumA+=a; sumP+=p; }
+    }
+    cur=new Date(cur.getFullYear(),cur.getMonth(),cur.getDate()+1);
+  }
+
+  var shown=(st==='a')?sumA:((st==='p')?sumP:(sumA+sumP));
+  var label=(st==='a')?'อนุมัติแล้ว':((st==='p')?'รออนุมัติ':'ทั้งหมด');
+
+  var h='<div class="cf-sum">'+
+    '<div><span>'+num(spanDays)+'</span><small>วันในช่วงที่เลือก</small></div>'+
+    '<div><span>'+num(rows.length)+'</span><small>วันที่มีผู้ลา</small></div>'+
+    '<div><span>'+num(shown)+'</span><small>คน-วัน ('+esc(label)+')</small></div>'+
+    '<div><span>'+(spanDays?(Math.round(shown/spanDays*100)/100):0)+'</span><small>เฉลี่ยต่อวัน</small></div>'+
+    '</div>';
+
+  if(!rows.length){
+    h+='<div class="cf-empty">ไม่พบวันที่มีผู้ลาตามเงื่อนไขนี้ ระหว่าง '+esc(thDate(from))+' ถึง '+esc(thDate(to))+'</div>';
+  }else{
+    h+='<div class="cf-list">'+rows.map(function(r){
+      var dot=(r.a>=r.p)?'var(--gr1)':'var(--pu1)';
+      var detail=[];
+      if((st==='all'||st==='a')&&r.a) detail.push('อนุมัติแล้ว '+r.a);
+      if((st==='all'||st==='p')&&r.p) detail.push('รออนุมัติ '+r.p);
+      return '<div class="cf-item">'+
+        '<span class="cf-dot" style="background:'+dot+'"></span>'+
+        '<b>'+esc(thDate(r.date))+'</b>'+
+        '<span style="color:var(--text2)">'+esc(detail.join(' • '))+'</span>'+
+        '<span class="n">'+r.n+' คน</span></div>';
+    }).join('')+'</div>';
+  }
+  box.innerHTML=h;
+}
+
 /* ---- ปุ่มซิงก์ + เมนูบนมือถือ ---- */
 $('btnSync').addEventListener('click', function(){ loadData(true); });
 
@@ -1183,6 +1444,8 @@ Array.prototype.forEach.call(document.querySelectorAll('.nav-links a'), function
 
 applyAppUrl();
 paintStars(0);
+initTheme();
+initCalFind();
 loadData();
 </script>
 </body>

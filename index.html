@@ -77,16 +77,25 @@ a{color:inherit}
 /* ---------- ส่วนหัวหน้า ---------- */
 .hero{max-width:1180px;margin:0 auto;padding:44px 20px 10px}
 .hero h1{
-  font-family:'Mitr';font-weight:500;font-size:clamp(27px,4.4vw,41px);
-  margin:0 0 10px;line-height:1.32;letter-spacing:-.2px;max-width:17ch;
+  font-family:'Mitr';font-weight:500;
+  /* ย่อขนาดตามความกว้างจอ เพื่อให้พาดหัวยาวอยู่ในบรรทัดเดียวบนจอกว้าง */
+  font-size:clamp(19px,2.32vw,31px);
+  margin:0;line-height:1.35;letter-spacing:-.3px;white-space:nowrap;
 }
-.hero p{margin:0;color:var(--text2);font-size:16px;max-width:58ch}
-.hero-meta{display:flex;gap:9px;flex-wrap:wrap;margin-top:20px;align-items:center}
+.hero-meta{display:flex;gap:9px;flex-wrap:wrap;margin-top:18px;align-items:center}
 .pill{
   display:inline-flex;align-items:center;gap:7px;background:var(--surface);
   border:1px solid var(--border);border-radius:999px;padding:7px 16px;font-size:13px;color:var(--text2);
 }
 .pill b{font-family:'Mitr';font-weight:500;color:var(--text)}
+.pill-quiet{background:transparent;border-style:dashed;color:var(--muted)}
+.pill-btn{cursor:pointer;font-family:'Sarabun';transition:all .18s var(--ease)}
+.pill-btn:hover{border-color:var(--pu1);color:var(--pu1);transform:translateY(-2px)}
+.pill-btn:active{transform:scale(.96)}
+.pill-btn:disabled{opacity:.55;cursor:default;transform:none}
+.ic-sync{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.pill-btn.busy .ic-sync{animation:spin .9s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
 .dot-live{width:8px;height:8px;border-radius:50%;background:var(--gr1);animation:pulse 2.2s infinite}
 @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.45;transform:scale(.82)}}
 
@@ -191,12 +200,104 @@ section{scroll-margin-top:90px}
 .err b{font-family:'Mitr';font-weight:500}
 
 footer{border-top:1px solid var(--border);background:var(--surface);margin-top:40px}
-.foot-in{max-width:1180px;margin:0 auto;padding:28px 20px;display:flex;gap:18px;flex-wrap:wrap;align-items:center}
-.foot-in p{margin:0;font-size:13px;color:var(--muted);line-height:1.8;flex:1;min-width:230px}
-.foot-in a.btn-login{margin-left:auto;text-decoration:none;border-radius:999px;font-size:14px;font-weight:600}
+.foot-in{max-width:1180px;margin:0 auto;padding:30px 20px;display:flex;gap:24px;flex-wrap:wrap;align-items:stretch}
+
+/* ---------- ช่องทางยื่นใบลา ---------- */
+.cta{
+  position:relative;border-radius:30px;overflow:hidden;margin-top:6px;
+  background:linear-gradient(120deg,#6C4FE8,#3F7BEA 45%,#20BFC1 100%);
+  background-size:220% 220%;animation:ctaFlow 14s ease infinite;
+  box-shadow:0 22px 50px rgba(79,84,233,.28);
+}
+@keyframes ctaFlow{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+.cta-glow{
+  position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(60% 90% at 88% 15%,rgba(255,255,255,.30),transparent 60%),
+             radial-gradient(48% 80% at 8% 92%,rgba(255,198,83,.28),transparent 62%);
+}
+.cta-in{position:relative;padding:46px 40px;text-align:center;color:#fff}
+.cta-eyebrow{
+  display:inline-block;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.34);
+  border-radius:999px;padding:6px 18px;font-size:13.5px;font-weight:600;margin-bottom:16px;
+}
+.cta-title{
+  font-family:'Mitr';font-weight:600;font-size:clamp(30px,5.2vw,50px);
+  margin:0 0 12px;line-height:1.2;letter-spacing:-.5px;text-shadow:0 3px 16px rgba(0,0,0,.14);
+}
+.cta-sub{margin:0 auto 26px;max-width:56ch;font-size:15.5px;line-height:1.85;color:rgba(255,255,255,.93)}
+.cta-btn{
+  display:inline-flex;align-items:center;gap:11px;text-decoration:none;
+  background:#fff;color:#4B37C4;border-radius:999px;padding:16px 42px;
+  font-family:'Mitr';font-weight:500;font-size:18px;
+  box-shadow:0 14px 34px rgba(0,0,0,.2);transition:all .2s var(--ease);
+}
+.cta-btn:hover{transform:translateY(-4px);box-shadow:0 20px 44px rgba(0,0,0,.26)}
+.cta-btn:active{transform:scale(.97)}
+.cta-btn svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.cta-url{margin:18px 0 0;font-size:12px;color:rgba(255,255,255,.72);word-break:break-all}
+
+/* ---------- ให้คะแนนความพึงพอใจ ---------- */
+.rate{
+  flex:1;min-width:300px;background:var(--bg);border:1px solid var(--border);
+  border-radius:22px;padding:22px 24px;
+}
+.rate-head{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.rate-ic{
+  width:40px;height:40px;border-radius:13px;flex:0 0 auto;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,#FFB800,#FFD966);box-shadow:0 8px 20px rgba(255,184,0,.32);
+}
+.rate-ic svg{width:21px;height:21px;fill:#fff;stroke:none}
+.rate-head b{display:block;font-family:'Mitr';font-weight:500;font-size:16px;line-height:1.4}
+.rate-head small{display:block;font-size:12.5px;color:var(--text2)}
+.stars{display:flex;align-items:center;gap:4px;flex-wrap:wrap}
+.star{
+  background:none;border:0;padding:3px;cursor:pointer;line-height:0;
+  transition:transform .18s var(--ease);
+}
+.star svg{width:36px;height:36px;fill:#E3E3DE;stroke:none;transition:fill .18s,filter .18s}
+.star:hover{transform:scale(1.18) rotate(-6deg)}
+.star:active{transform:scale(.9)}
+.star.on svg{fill:#FFC107;filter:drop-shadow(0 4px 10px rgba(255,184,0,.45))}
+.star.pop{animation:pop .42s var(--ease)}
+@keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.42) rotate(-12deg)}100%{transform:scale(1)}}
+.rate-word{
+  font-family:'Mitr';font-weight:500;font-size:15px;margin-left:10px;
+  color:var(--text2);transition:color .2s;
+}
+.rate-word.w1{color:#C8385C}.rate-word.w2{color:#E07A2B}
+.rate-word.w3{color:#C79A00}.rate-word.w4{color:#2A9D5C}.rate-word.w5{color:#17864B}
+.rate-form{display:flex;gap:9px;margin-top:16px;flex-wrap:wrap}
+.rate-form input{
+  flex:1;min-width:180px;border:1px solid var(--border);border-radius:13px;padding:11px 15px;
+  font-family:'Sarabun';font-size:14px;background:var(--surface);color:var(--text);outline:none;
+  transition:border-color .18s,box-shadow .18s;
+}
+.rate-form input:focus{border-color:#FFB800;box-shadow:0 0 0 4px rgba(255,184,0,.16)}
+.rate-form button{
+  border:0;border-radius:13px;padding:11px 26px;cursor:pointer;color:#fff;
+  font-family:'Mitr';font-weight:500;font-size:14.5px;
+  background:linear-gradient(135deg,#FF9A1F,#FFC653);
+  box-shadow:0 8px 20px rgba(255,154,31,.3);transition:all .18s var(--ease);
+}
+.rate-form button:hover:not(:disabled){transform:translateY(-3px);box-shadow:0 12px 26px rgba(255,154,31,.38)}
+.rate-form button:active:not(:disabled){transform:scale(.96)}
+.rate-form button:disabled{opacity:.45;cursor:not-allowed;box-shadow:none}
+.rate-msg{margin:11px 0 0;font-size:13px;min-height:19px}
+.rate-msg.ok{color:#17864B}.rate-msg.bad{color:#C8385C}
+
+/* ---------- ข้อมูลผู้พัฒนา ---------- */
+.credit{flex:1;min-width:280px;display:flex;flex-direction:column;gap:6px;justify-content:center}
+.credit-org{margin:0;font-family:'Mitr';font-weight:500;font-size:14.5px;color:var(--text)}
+.credit-dev{margin:0;font-size:13.5px;color:var(--text2);line-height:1.9}
+.credit-dev b{font-family:'Mitr';font-weight:500;color:var(--text)}
+.credit-dev .sep{color:var(--border);margin:0 6px}
+.credit-dev a{color:var(--bl1);text-decoration:none}
+.credit-dev a:hover{text-decoration:underline}
 
 @media(max-width:1000px){.c4{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:1180px){.hero h1{white-space:normal}}
 @media(max-width:860px){
+  .cta-in{padding:36px 22px}
   .nav-links{
     position:fixed;left:0;right:0;top:calc(66px + env(safe-area-inset-top,0px));
     background:var(--surface);border-bottom:1px solid var(--border);
@@ -211,6 +312,9 @@ footer{border-top:1px solid var(--border);background:var(--surface);margin-top:4
 @media(max-width:520px){
   .c4{grid-template-columns:1fr}
   .hero{padding-top:30px}
+  .star svg{width:31px;height:31px}
+  .rate-word{width:100%;margin:6px 0 0}
+  .cta-btn{padding:14px 28px;font-size:16px;width:100%;justify-content:center}
   .bars{height:140px;gap:7px}
   .brand small{display:none}
 }
@@ -237,7 +341,7 @@ footer{border-top:1px solid var(--border);background:var(--surface);margin-top:4
       <a href="#overview">ภาพรวม</a>
       <a href="#week">สรุปสัปดาห์นี้</a>
       <a href="#holidays">วันหยุดราชการ</a>
-      <a href="#track">ติดตามสถานะ</a>
+      <a href="#apply">ยื่นใบลา</a>
       <a class="btn-login" id="loginTop" href="#">
         <svg viewBox="0 0 24 24"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3"/></svg>
         เข้าสู่ระบบ
@@ -247,13 +351,16 @@ footer{border-top:1px solid var(--border);background:var(--surface);margin-top:4
 </nav>
 
 <header class="hero" id="top">
-  <h1>ภาพรวมการลาของบุคลากร คณะวิศวกรรมศาสตร์</h1>
-  <p>หน้านี้แสดงตัวเลขภาพรวมที่ดึงตรงจากระบบจัดการวันลา เปิดดูได้โดยไม่ต้องเข้าสู่ระบบ
-     บุคลากรที่ต้องการยื่นใบลาหรือตรวจสิทธิคงเหลือของตนเอง กรุณาเข้าสู่ระบบ</p>
+  <h1>ภาพรวมการลาของบุคลากรภายใน คณะวิศวกรรมศาสตร์ มหาวิทยาลัยมหาสารคาม</h1>
   <div class="hero-meta">
     <span class="pill"><span class="dot-live"></span>ข้อมูลสด</span>
     <span class="pill">ข้อมูล ณ <b id="asOf">กำลังโหลด…</b></span>
     <span class="pill" id="pillUpdated" style="display:none">ปรับปรุงล่าสุด <b id="updatedAt"></b></span>
+    <button class="pill pill-btn" id="btnSync" type="button">
+      <svg class="ic-sync" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-2.6-6.4M21 3v6h-6"/></svg>
+      <b>ซิงก์ข้อมูลล่าสุด</b>
+    </button>
+    <span class="pill pill-quiet" id="pillNext">รีเฟรชอัตโนมัติทุก 5 นาที</span>
   </div>
 </header>
 
@@ -337,21 +444,20 @@ footer{border-top:1px solid var(--border);background:var(--surface);margin-top:4
     </div>
   </section>
 
-  <!-- ติดตามสถานะ -->
-  <section id="track">
-    <div class="sec-head">
-      <span class="sec-ic g-gr"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></span>
-      <h2>ติดตามสถานะใบลาของท่าน</h2>
-    </div>
-    <div class="card track">
-      <p class="card-sub">
-        ผู้ที่ยื่นใบลาไว้จะได้รับอีเมลพร้อม QR และลิงก์ติดตามสถานะ
-        หากมีรหัสติดตามอยู่แล้ว กรอกด้านล่างเพื่อเปิดดูได้ทันทีโดยไม่ต้องเข้าสู่ระบบ
-      </p>
-      <div class="track-form">
-        <input id="trackCode" type="text" inputmode="latin" autocomplete="off" spellcheck="false"
-               placeholder="กรอกรหัสติดตาม หรือวางลิงก์ที่ได้รับทางอีเมล">
-        <button id="trackGo">เปิดดูสถานะ</button>
+  <!-- ช่องทางยื่นใบลา -->
+  <section id="apply">
+    <div class="cta">
+      <div class="cta-glow"></div>
+      <div class="cta-in">
+        <span class="cta-eyebrow">ช่องทางผู้ขอรับบริการ</span>
+        <h2 class="cta-title">ยื่นใบลาออนไลน์</h2>
+        <p class="cta-sub">บุคลากรคณะวิศวกรรมศาสตร์ เข้าสู่ระบบด้วยรหัสบุคลากรหรืออีเมลของท่าน
+          เพื่อยื่นใบลา ตรวจสิทธิวันลาคงเหลือ และติดตามสถานะเรื่องของตนเอง</p>
+        <a class="cta-btn" id="ctaApply" href="#" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M12 12v6M9 15h6"/></svg>
+          เข้าสู่ระบบเพื่อยื่นใบลา
+        </a>
+        <p class="cta-url" id="ctaUrl"></p>
       </div>
     </div>
   </section>
@@ -360,16 +466,44 @@ footer{border-top:1px solid var(--border);background:var(--surface);margin-top:4
 
 <footer>
   <div class="foot-in">
-    <p>
-      <b style="font-family:'Mitr';font-weight:500;color:var(--text)">ระบบจัดการวันลา</b> —
-      คณะวิศวกรรมศาสตร์ มหาวิทยาลัยมหาสารคาม<br>
-      หน้านี้แสดงเฉพาะตัวเลขภาพรวม ไม่มีรายละเอียดใบลารายบุคคล
-      สอบถามเพิ่มเติมที่งานบุคคล สำนักงานเลขานุการคณบดี
-    </p>
-    <a class="btn-login" id="loginBottom" href="#">
-      <svg viewBox="0 0 24 24"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3"/></svg>
-      เข้าสู่ระบบ
-    </a>
+
+    <!-- ให้คะแนนความพึงพอใจ -->
+    <div class="rate" id="rateBox">
+      <div class="rate-head">
+        <span class="rate-ic"><svg viewBox="0 0 24 24"><path d="m12 3 2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8L3.5 9.2l5.9-.9z"/></svg></span>
+        <div>
+          <b>ความพึงพอใจต่อการให้บริการ</b>
+          <small id="rateStat">กำลังโหลดคะแนน…</small>
+        </div>
+      </div>
+
+      <div class="stars" id="stars" role="radiogroup" aria-label="ให้คะแนนความพึงพอใจ">
+        <button type="button" class="star" data-v="1" aria-label="1 ดาว"><svg viewBox="0 0 24 24"><path d="m12 2.6 2.9 5.9 6.5 1-4.7 4.6 1.1 6.5L12 17.5 6.2 20.6l1.1-6.5L2.6 9.5l6.5-1z"/></svg></button>
+        <button type="button" class="star" data-v="2" aria-label="2 ดาว"><svg viewBox="0 0 24 24"><path d="m12 2.6 2.9 5.9 6.5 1-4.7 4.6 1.1 6.5L12 17.5 6.2 20.6l1.1-6.5L2.6 9.5l6.5-1z"/></svg></button>
+        <button type="button" class="star" data-v="3" aria-label="3 ดาว"><svg viewBox="0 0 24 24"><path d="m12 2.6 2.9 5.9 6.5 1-4.7 4.6 1.1 6.5L12 17.5 6.2 20.6l1.1-6.5L2.6 9.5l6.5-1z"/></svg></button>
+        <button type="button" class="star" data-v="4" aria-label="4 ดาว"><svg viewBox="0 0 24 24"><path d="m12 2.6 2.9 5.9 6.5 1-4.7 4.6 1.1 6.5L12 17.5 6.2 20.6l1.1-6.5L2.6 9.5l6.5-1z"/></svg></button>
+        <button type="button" class="star" data-v="5" aria-label="5 ดาว"><svg viewBox="0 0 24 24"><path d="m12 2.6 2.9 5.9 6.5 1-4.7 4.6 1.1 6.5L12 17.5 6.2 20.6l1.1-6.5L2.6 9.5l6.5-1z"/></svg></button>
+        <span class="rate-word" id="rateWord">แตะดาวเพื่อให้คะแนน</span>
+      </div>
+
+      <div class="rate-form">
+        <input id="rateNote" type="text" maxlength="300" autocomplete="off"
+               placeholder="ข้อเสนอแนะเพิ่มเติม (ไม่บังคับ)">
+        <button type="button" id="rateSend" disabled>ส่งคะแนน</button>
+      </div>
+      <p class="rate-msg" id="rateMsg"></p>
+    </div>
+
+    <!-- ข้อมูลผู้พัฒนา -->
+    <div class="credit">
+      <p class="credit-org">© 2569 คณะวิศวกรรมศาสตร์ มหาวิทยาลัยมหาสารคาม</p>
+      <p class="credit-dev">
+        พัฒนาโดย <b>นายปัญญา จีระฉัตร</b>
+        <span class="sep">|</span> นักวิชาการโสตทัศนศึกษา
+        <span class="sep">|</span> <a href="mailto:panya.j@msu.ac.th">panya.j@msu.ac.th</a>
+      </p>
+    </div>
+
   </div>
 </footer>
 
@@ -378,11 +512,6 @@ footer{border-top:1px solid var(--border);background:var(--surface);margin-top:4
    ที่อยู่ของระบบหลัง — แก้บรรทัดเดียวนี้เมื่อ Deploy ใหม่แล้ว URL เปลี่ยน
    =================================================================== */
 var APP_URL = 'https://script.google.com/macros/s/AKfycbzn6b1edfqUSLRn-v320rQafQaY2Nycnjq72hCgaP42Q0mDZQGgvV8FC9LovAVso3fNpw/exec';
-
-document.getElementById('loginTop').href = APP_URL;
-document.getElementById('loginBottom').href = APP_URL;
-document.getElementById('loginTop').target = '_blank';
-document.getElementById('loginBottom').target = '_blank';
 
 var $ = function(id){ return document.getElementById(id); };
 function esc(v){
@@ -436,36 +565,107 @@ function avatarGrad(seed){
    Apps Script ไม่ส่งหัว CORS หน้าเว็บภายนอกจึงใช้ fetch ตรงไม่ได้
    วิธีที่ใช้ได้คือแทรกแท็ก script แล้วให้ฝั่งระบบห่อผลลัพธ์ด้วยชื่อฟังก์ชัน
    ------------------------------------------------------------------- */
-var loaded = false;
+var REFRESH_MS = 5 * 60 * 1000;   /* รีเฟรชอัตโนมัติทุก 5 นาที เหมาะกับจอแสดงผล */
+var jsonpSeq = 0;
+var firstLoadDone = false;
+var refreshTimer = null, tickTimer = null, nextAt = 0;
 
-window.onPublicData = function(d){
-  loaded = true;
-  if(!d || !d.ok){
-    showError(d && d.error ? d.error : 'ระบบไม่ได้ส่งข้อมูลกลับมา');
-    return;
+/**
+ * เรียก JSONP หนึ่งครั้ง โดยตั้งชื่อฟังก์ชันไม่ซ้ำกันทุกรอบ
+ * แล้วเก็บกวาดทั้งแท็ก script และตัวแปรทิ้งเมื่อเสร็จ กันหน่วยความจำรั่วบนจอที่เปิดค้างทั้งวัน
+ */
+function jsonp(params, onDone, onFail, timeoutMs){
+  var name = '__cb' + (++jsonpSeq) + '_' + Date.now();
+  var el = document.createElement('script');
+  var done = false;
+
+  function cleanup(){
+    try{ delete window[name]; }catch(e){ window[name] = undefined; }
+    if(el && el.parentNode) el.parentNode.removeChild(el);
   }
-  render(d);
-};
-
-function loadData(){
-  var s = document.createElement('script');
-  s.src = APP_URL + '?publicData=1&callback=onPublicData&_=' + Date.now();
-  s.onerror = function(){ showError('เชื่อมต่อระบบไม่สำเร็จ'); };
-  document.body.appendChild(s);
-
+  window[name] = function(data){
+    if(done) return;
+    done = true; cleanup(); onDone(data);
+  };
+  el.onerror = function(){
+    if(done) return;
+    done = true; cleanup(); onFail('เชื่อมต่อระบบไม่สำเร็จ');
+  };
   setTimeout(function(){
-    if(!loaded) showError('ระบบไม่ตอบกลับภายในเวลาที่กำหนด');
-  }, 15000);
+    if(done) return;
+    done = true; cleanup(); onFail('ระบบไม่ตอบกลับภายในเวลาที่กำหนด');
+  }, timeoutMs || 15000);
+
+  el.src = APP_URL + '?' + params + '&callback=' + name + '&_=' + Date.now();
+  document.body.appendChild(el);
 }
 
+function setSyncBusy(on){
+  var b = $('btnSync');
+  if(!b) return;
+  b.disabled = on;
+  b.classList.toggle('busy', on);
+  b.querySelector('b').textContent = on ? 'กำลังซิงก์…' : 'ซิงก์ข้อมูลล่าสุด';
+}
+
+function loadData(manual){
+  setSyncBusy(true);
+  jsonp('publicData=1', function(d){
+    setSyncBusy(false);
+    if(!d || !d.ok){
+      showError(d && d.error ? d.error : 'ระบบไม่ได้ส่งข้อมูลกลับมา');
+    }else{
+      $('errBox').style.display = 'none';
+      firstLoadDone = true;
+      render(d);
+      if(manual) flashSynced();
+    }
+    scheduleNext();
+  }, function(msg){
+    setSyncBusy(false);
+    showError(msg);
+    scheduleNext();
+  });
+}
+
+function flashSynced(){
+  var p = $('pillNext');
+  p.textContent = 'ซิงก์ข้อมูลเรียบร้อย';
+  p.style.color = '#17864B';
+  p.style.borderColor = '#9FE0BE';
+  setTimeout(function(){ p.style.color = ''; p.style.borderColor = ''; }, 2200);
+}
+
+/** ตั้งเวลารอบถัดไป พร้อมนับถอยหลังให้เห็นว่าอีกกี่นาทีจะอัปเดต */
+function scheduleNext(){
+  if(refreshTimer) clearTimeout(refreshTimer);
+  if(tickTimer) clearInterval(tickTimer);
+  nextAt = Date.now() + REFRESH_MS;
+  refreshTimer = setTimeout(function(){ loadData(false); }, REFRESH_MS);
+  tickTimer = setInterval(tick, 1000);
+  tick();
+}
+
+function tick(){
+  var p = $('pillNext');
+  if(!p || p.style.color) return;                 /* ระหว่างโชว์ข้อความซิงก์สำเร็จ อย่าทับ */
+  var left = Math.max(0, nextAt - Date.now());
+  var m = Math.floor(left / 60000), sec = Math.floor(left % 60000 / 1000);
+  p.textContent = 'อัปเดตอัตโนมัติอีก ' + m + ':' + (sec < 10 ? '0' : '') + sec + ' นาที';
+}
+
+/* จอที่เปิดค้างไว้ พอกลับมาที่แท็บนี้ให้ดึงข้อมูลใหม่ทันทีถ้าค้างนานเกินรอบ */
+document.addEventListener('visibilitychange', function(){
+  if(document.visibilityState === 'visible' && Date.now() > nextAt) loadData(false);
+});
+
 function showError(msg){
-  if(loaded) return;
-  loaded = true;
   $('errBox').style.display = 'block';
   $('errBox').innerHTML =
     '<div class="err"><b>ยังแสดงข้อมูลภาพรวมไม่ได้</b><br>'+esc(msg)+
     '<br><br>สาเหตุที่พบบ่อยคือระบบยังไม่ได้เปิดการเผยแพร่ข้อมูล หรือที่อยู่ของระบบเปลี่ยนไปหลัง Deploy ใหม่ '+
     'ท่านยังเข้าใช้งานระบบได้ตามปกติผ่านปุ่มเข้าสู่ระบบ</div>';
+  if(firstLoadDone) return;                        /* เคยโหลดสำเร็จแล้ว คงตัวเลขเดิมไว้ ดีกว่าล้างเป็นขีด */
   $('asOf').textContent = 'ไม่สามารถเชื่อมต่อได้';
   ['nTotal','nToday','nPending','nWeek'].forEach(function(id){ $(id).textContent = '—'; });
   $('weekRange').textContent = 'ไม่มีข้อมูล';
@@ -477,11 +677,9 @@ function showError(msg){
 }
 
 function render(d){
-  if(d.appUrl){
-    APP_URL = d.appUrl;
-    $('loginTop').href = APP_URL;
-    $('loginBottom').href = APP_URL;
-  }
+  if(d.appUrl) APP_URL = d.appUrl;
+  applyAppUrl();
+  if(d.feedback) paintRateStat(d.feedback);
   $('asOf').textContent = thDate(d.today);
   if(d.updatedAt){
     $('updatedAt').textContent = d.updatedAt;
@@ -570,25 +768,90 @@ function render(d){
     : '<div class="empty">ยังไม่มีวันหยุดที่บันทึกไว้ล่วงหน้า</div>';
 }
 
-/* ---- ติดตามสถานะ ---- */
-function openTrack(){
-  var v = $('trackCode').value.trim();
-  if(!v){ $('trackCode').focus(); return; }
-  var url;
-  if(/^https?:\/\//i.test(v)){
-    url = v;                                   /* วางลิงก์เต็มมาก็เปิดให้เลย */
-  }else{
-    var m = v.match(/track=([A-Za-z0-9_-]+)/); /* เผื่อวางมาเฉพาะท่อนพารามิเตอร์ */
-    var code = m ? m[1] : v.replace(/[^A-Za-z0-9_-]/g,'');
-    if(!code){ $('trackCode').focus(); return; }
-    url = APP_URL + '?track=' + encodeURIComponent(code);
-  }
-  window.open(url, '_blank', 'noopener');
+/* ---- ตั้งที่อยู่ระบบให้ทุกปุ่ม ---- */
+function applyAppUrl(){
+  ['loginTop','ctaApply'].forEach(function(id){
+    var el = $(id);
+    if(el){ el.href = APP_URL; el.target = '_blank'; el.rel = 'noopener'; }
+  });
+  var u = $('ctaUrl');
+  if(u) u.textContent = APP_URL;
 }
-$('trackGo').addEventListener('click', openTrack);
-$('trackCode').addEventListener('keydown', function(e){ if(e.key === 'Enter') openTrack(); });
 
-/* ---- เมนูบนมือถือ ---- */
+/* ---- ให้คะแนนความพึงพอใจ ---- */
+var RATE_WORD = ['','ควรปรับปรุง','พอใช้','ดี','ดีมาก','ดีเยี่ยม'];
+var myScore = 0, rateSent = false;
+
+function paintStars(n){
+  var btns = document.querySelectorAll('.star');
+  Array.prototype.forEach.call(btns, function(b, i){
+    b.classList.toggle('on', i < n);
+  });
+  var w = $('rateWord');
+  w.className = 'rate-word' + (n ? ' w' + n : '');
+  w.textContent = n ? (n + ' ดาว • ' + RATE_WORD[n]) : 'แตะดาวเพื่อให้คะแนน';
+}
+
+function paintRateStat(f){
+  var el = $('rateStat');
+  if(!el) return;
+  el.textContent = f.count
+    ? ('คะแนนเฉลี่ย ' + f.average.toFixed(2) + ' จาก 5 • ผู้ประเมิน ' + num(f.count) + ' คน')
+    : 'ยังไม่มีผู้ประเมิน ท่านเป็นคนแรกได้เลย';
+}
+
+Array.prototype.forEach.call(document.querySelectorAll('.star'), function(b){
+  b.addEventListener('click', function(){
+    if(rateSent) return;
+    myScore = Number(b.getAttribute('data-v'));
+    paintStars(myScore);
+    b.classList.remove('pop');
+    void b.offsetWidth;                  /* บังคับให้อนิเมชันเล่นซ้ำได้ทุกครั้ง */
+    b.classList.add('pop');
+    $('rateSend').disabled = false;
+    $('rateMsg').textContent = '';
+  });
+  b.addEventListener('mouseenter', function(){
+    if(rateSent) return;
+    paintStars(Number(b.getAttribute('data-v')));
+  });
+});
+$('stars').addEventListener('mouseleave', function(){ if(!rateSent) paintStars(myScore); });
+
+$('rateSend').addEventListener('click', function(){
+  if(rateSent || !myScore) return;
+  var btn = this;
+  btn.disabled = true;
+  btn.textContent = 'กำลังส่ง…';
+  $('rateMsg').className = 'rate-msg';
+  $('rateMsg').textContent = '';
+
+  var note = encodeURIComponent($('rateNote').value.trim().substring(0,300));
+  jsonp('feedback=1&score=' + myScore + '&comment=' + note, function(r){
+    if(r && r.ok){
+      rateSent = true;
+      btn.textContent = 'ส่งแล้ว ขอบคุณครับ';
+      $('rateNote').disabled = true;
+      $('rateMsg').className = 'rate-msg ok';
+      $('rateMsg').textContent = 'ขอบคุณสำหรับคะแนน ' + myScore + ' ดาว ความเห็นของท่านช่วยให้เราพัฒนาบริการได้ดีขึ้น';
+      paintRateStat({ count: r.count, average: r.average });
+    }else{
+      btn.disabled = false;
+      btn.textContent = 'ส่งคะแนน';
+      $('rateMsg').className = 'rate-msg bad';
+      $('rateMsg').textContent = (r && r.error) ? r.error : 'ส่งคะแนนไม่สำเร็จ กรุณาลองอีกครั้ง';
+    }
+  }, function(msg){
+    btn.disabled = false;
+    btn.textContent = 'ส่งคะแนน';
+    $('rateMsg').className = 'rate-msg bad';
+    $('rateMsg').textContent = msg;
+  }, 12000);
+});
+
+/* ---- ปุ่มซิงก์ + เมนูบนมือถือ ---- */
+$('btnSync').addEventListener('click', function(){ loadData(true); });
+
 $('navToggle').addEventListener('click', function(){
   $('navLinks').classList.toggle('open');
 });
@@ -596,6 +859,8 @@ Array.prototype.forEach.call(document.querySelectorAll('.nav-links a'), function
   a.addEventListener('click', function(){ $('navLinks').classList.remove('open'); });
 });
 
+applyAppUrl();
+paintStars(0);
 loadData();
 </script>
 </body>

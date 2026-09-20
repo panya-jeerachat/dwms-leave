@@ -200,7 +200,7 @@ section{scroll-margin-top:90px}
 .err b{font-family:'Mitr';font-weight:500}
 
 footer{border-top:1px solid var(--border);background:var(--surface);margin-top:40px}
-.foot-in{max-width:1180px;margin:0 auto;padding:30px 20px;display:flex;gap:24px;flex-wrap:wrap;align-items:stretch}
+.foot-in{max-width:1180px;margin:0 auto;padding:30px 20px}
 
 /* ---------- ตัวชี้วัด ---------- */
 .kpi-strip{
@@ -323,7 +323,7 @@ footer{border-top:1px solid var(--border);background:var(--surface);margin-top:4
 
 /* ---------- ให้คะแนนความพึงพอใจ ---------- */
 .rate{
-  flex:1;min-width:300px;background:var(--bg);border:1px solid var(--border);
+  width:100%;background:var(--bg);border:1px solid var(--border);
   border-radius:22px;padding:22px 24px;
 }
 .rate-head{display:flex;align-items:center;gap:12px;margin-bottom:14px}
@@ -370,8 +370,12 @@ footer{border-top:1px solid var(--border);background:var(--surface);margin-top:4
 .rate-msg{margin:11px 0 0;font-size:13px;min-height:19px}
 .rate-msg.ok{color:#17864B}.rate-msg.bad{color:#C8385C}
 
-/* ---------- ข้อมูลผู้พัฒนา ---------- */
-.credit{flex:1;min-width:280px;display:flex;flex-direction:column;gap:6px;justify-content:center}
+/* ---------- ข้อมูลผู้พัฒนา (แถบล่างสุด) ---------- */
+.credit-bar{border-top:1px solid var(--border);background:var(--bg)}
+.credit-in{
+  max-width:1180px;margin:0 auto;padding:20px;
+  display:flex;gap:10px 26px;flex-wrap:wrap;align-items:center;justify-content:space-between;
+}
 .credit-org{margin:0;font-family:'Mitr';font-weight:500;font-size:14.5px;color:var(--text)}
 .credit-dev{margin:0;font-size:13.5px;color:var(--text2);line-height:1.9}
 .credit-dev b{font-family:'Mitr';font-weight:500;color:var(--text)}
@@ -395,6 +399,7 @@ footer{border-top:1px solid var(--border);background:var(--surface);margin-top:4
   .c2{grid-template-columns:1fr}
 }
 @media(max-width:520px){
+  .credit-in{justify-content:center;text-align:center}
   .c4{grid-template-columns:1fr}
   .hero{padding-top:30px}
   .star svg{width:31px;height:31px}
@@ -432,11 +437,11 @@ footer{border-top:1px solid var(--border);background:var(--surface);margin-top:4
     </button>
     <div class="nav-links" id="navLinks">
       <a href="#overview">ภาพรวม</a>
-      <a href="#kpi">ตัวชี้วัด</a>
       <a href="#calendar">ปฏิทิน</a>
       <a href="#week">สรุปสัปดาห์นี้</a>
       <a href="#holidays">วันหยุดราชการ</a>
       <a href="#apply">ยื่นใบลา</a>
+      <a href="#kpi">ตัวชี้วัด</a>
       <a class="btn-login" id="loginTop" href="#">
         <svg viewBox="0 0 24 24"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3"/></svg>
         เข้าสู่ระบบ
@@ -491,20 +496,6 @@ footer{border-top:1px solid var(--border);background:var(--surface);margin-top:4
         <div class="st-foot" id="fWeek"></div>
       </div>
     </div>
-  </section>
-
-  <!-- ตัวชี้วัด -->
-  <section id="kpi">
-    <div class="sec-head">
-      <span class="sec-ic g-gr"><svg viewBox="0 0 24 24"><path d="M3 20h18M7 16v-5M12 16V7M17 16v-8"/></svg></span>
-      <h2>ตัวชี้วัดผลการดำเนินงาน</h2>
-    </div>
-
-    <div class="kpi-strip" id="kpiStatus">
-      <div class="sk sk-line" style="width:100%;height:60px"></div>
-    </div>
-
-    <div class="grid c4" id="kpiCards" style="margin-top:16px"></div>
   </section>
 
   <!-- ปฏิทินรายวัน -->
@@ -602,6 +593,20 @@ footer{border-top:1px solid var(--border);background:var(--surface);margin-top:4
     </div>
   </section>
 
+  <!-- ตัวชี้วัดผลการดำเนินงาน -->
+  <section id="kpi">
+    <div class="sec-head">
+      <span class="sec-ic g-gr"><svg viewBox="0 0 24 24"><path d="M3 20h18M7 16v-5M12 16V7M17 16v-8"/></svg></span>
+      <h2>ตัวชี้วัดผลการดำเนินงาน</h2>
+    </div>
+
+    <div class="kpi-strip" id="kpiStatus">
+      <div class="sk sk-line" style="width:100%;height:60px"></div>
+    </div>
+
+    <div class="grid c4" id="kpiCards" style="margin-top:16px"></div>
+  </section>
+
 </main>
 
 <footer>
@@ -634,8 +639,11 @@ footer{border-top:1px solid var(--border);background:var(--surface);margin-top:4
       <p class="rate-msg" id="rateMsg"></p>
     </div>
 
-    <!-- ข้อมูลผู้พัฒนา -->
-    <div class="credit">
+  </div>
+
+  <!-- ข้อมูลผู้พัฒนา — แถบล่างสุดเต็มความกว้าง แยกจากส่วนให้คะแนน -->
+  <div class="credit-bar">
+    <div class="credit-in">
       <p class="credit-org">© 2569 คณะวิศวกรรมศาสตร์ มหาวิทยาลัยมหาสารคาม</p>
       <p class="credit-dev">
         พัฒนาโดย <b>นายปัญญา จีระฉัตร</b>
@@ -643,7 +651,6 @@ footer{border-top:1px solid var(--border);background:var(--surface);margin-top:4
         <span class="sep">|</span> <a href="mailto:panya.j@msu.ac.th">panya.j@msu.ac.th</a>
       </p>
     </div>
-
   </div>
 </footer>
 

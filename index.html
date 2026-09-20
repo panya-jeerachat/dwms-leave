@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ระบบจัดการวันลา — คณะวิศวกรรมศาสตร์ มหาวิทยาลัยมหาสารคาม</title>
+<meta name="description" content="ภาพรวมการลาของบุคลากร คณะวิศวกรรมศาสตร์ มหาวิทยาลัยมหาสารคาม ตรวจสอบสถานะใบลาและวันหยุดราชการ">
+<meta property="og:title" content="ระบบจัดการวันลา — คณะวิศวกรรมศาสตร์ มมส.">
+<meta property="og:description" content="ภาพรวมการลาของบุคลากร ตรวจสอบสถานะใบลา และวันหยุดราชการ">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Mitr:wght@300;400;500;600&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ===================================================================
+   ชุดสีและตัวอักษรชุดเดียวกับระบบหลัง เพื่อให้ผู้ใช้รู้สึกต่อเนื่อง
+   =================================================================== */
+:root{
+  --bg:#F8F8F6; --surface:#FFFFFF; --soft:#F3F3F0;
+  --text:#262626; --text2:#777777; --muted:#909090; --border:#ECECEC;
+  --o1:#FF8A24; --o2:#FFC653; --o-soft:#FFF1DF;
+  --pk1:#ED438B; --pk2:#FF79AD; --pk-soft:#FFE7F0;
+  --bl1:#377BEA; --bl2:#55B6F5; --bl-soft:#E7F0FE;
+  --gr1:#26B96E; --gr2:#59DE91; --gr-soft:#E3F8ED;
+  --tl1:#20BFC1; --tl2:#64E4DE; --tl-soft:#E0F8F7;
+  --pu1:#745CE9; --pu2:#9C75F6; --pu-soft:#EFEBFE;
+  --ease:cubic-bezier(.22,.9,.3,1);
+  --shadow:0 10px 30px rgba(38,38,38,.06);
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-behavior:smooth;scroll-padding-top:86px}
+body{
+  margin:0;background:var(--bg);color:var(--text);
+  font-family:'Sarabun',Tahoma,-apple-system,sans-serif;font-size:15px;line-height:1.75;
+  -webkit-font-smoothing:antialiased;
+}
+img{max-width:100%}
+a{color:inherit}
+
+/* ---------- แถบเมนูด้านบน ---------- */
+.nav{
+  position:sticky;top:env(safe-area-inset-top,0px);z-index:40;
+  background:rgba(255,255,255,.88);backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--border);
+}
+.nav-in{max-width:1180px;margin:0 auto;padding:12px 20px;display:flex;align-items:center;gap:16px}
+.brand{display:flex;align-items:center;gap:11px;text-decoration:none;flex:0 0 auto}
+.brand-ic{
+  width:40px;height:40px;border-radius:13px;flex:0 0 auto;
+  background:linear-gradient(135deg,var(--pu1),var(--bl2));
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 6px 16px rgba(116,92,233,.28);
+}
+.brand-ic svg{width:21px;height:21px;stroke:#fff;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.brand b{font-family:'Mitr';font-weight:500;font-size:16.5px;display:block;line-height:1.3}
+.brand small{display:block;font-size:11.5px;color:var(--text2);line-height:1.3}
+.nav-links{display:flex;gap:4px;margin-left:auto;align-items:center}
+.nav-links a{
+  text-decoration:none;color:var(--text2);font-size:14px;font-weight:600;
+  padding:8px 14px;border-radius:999px;transition:all .18s var(--ease);white-space:nowrap;
+}
+.nav-links a:hover{background:var(--soft);color:var(--text);transform:translateY(-2px)}
+.btn-login{
+  background:linear-gradient(135deg,var(--pu1),var(--bl1));color:#fff!important;
+  padding:10px 22px!important;box-shadow:0 8px 20px rgba(116,92,233,.3);
+  display:inline-flex;align-items:center;gap:8px;
+}
+.btn-login:hover{background:linear-gradient(135deg,var(--pu1),var(--bl1))!important;transform:translateY(-3px);box-shadow:0 12px 26px rgba(116,92,233,.36)}
+.btn-login:active{transform:scale(.97)}
+.btn-login svg{width:17px;height:17px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.nav-toggle{display:none;margin-left:auto;background:none;border:1px solid var(--border);border-radius:11px;padding:9px;cursor:pointer}
+.nav-toggle svg{width:20px;height:20px;stroke:var(--text);fill:none;stroke-width:2;stroke-linecap:round}
+
+/* ---------- ส่วนหัวหน้า ---------- */
+.hero{max-width:1180px;margin:0 auto;padding:44px 20px 10px}
+.hero h1{
+  font-family:'Mitr';font-weight:500;font-size:clamp(27px,4.4vw,41px);
+  margin:0 0 10px;line-height:1.32;letter-spacing:-.2px;max-width:17ch;
+}
+.hero p{margin:0;color:var(--text2);font-size:16px;max-width:58ch}
+.hero-meta{display:flex;gap:9px;flex-wrap:wrap;margin-top:20px;align-items:center}
+.pill{
+  display:inline-flex;align-items:center;gap:7px;background:var(--surface);
+  border:1px solid var(--border);border-radius:999px;padding:7px 16px;font-size:13px;color:var(--text2);
+}
+.pill b{font-family:'Mitr';font-weight:500;color:var(--text)}
+.dot-live{width:8px;height:8px;border-radius:50%;background:var(--gr1);animation:pulse 2.2s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.45;transform:scale(.82)}}
+
+/* ---------- โครงเนื้อหา ---------- */
+.wrap{max-width:1180px;margin:0 auto;padding:26px 20px 60px}
+section{scroll-margin-top:90px}
+.sec-head{display:flex;align-items:center;gap:11px;margin:38px 0 16px}
+.sec-head h2{font-family:'Mitr';font-weight:500;font-size:20px;margin:0}
+.sec-ic{width:33px;height:33px;border-radius:11px;display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+.sec-ic svg{width:17px;height:17px;stroke:#fff;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.g-o{background:linear-gradient(135deg,var(--o1),var(--o2))}
+.g-pk{background:linear-gradient(135deg,var(--pk1),var(--pk2))}
+.g-bl{background:linear-gradient(135deg,var(--bl1),var(--bl2))}
+.g-gr{background:linear-gradient(135deg,var(--gr1),var(--gr2))}
+.g-tl{background:linear-gradient(135deg,var(--tl1),var(--tl2))}
+.g-pu{background:linear-gradient(135deg,var(--pu1),var(--pu2))}
+
+.grid{display:grid;gap:16px}
+.c4{grid-template-columns:repeat(4,1fr)}
+.c2{grid-template-columns:repeat(2,1fr)}
+.card{
+  background:var(--surface);border:1px solid var(--border);border-radius:22px;
+  padding:22px;box-shadow:var(--shadow);position:relative;overflow:hidden;
+}
+.stat{transition:transform .22s var(--ease),box-shadow .22s var(--ease)}
+.stat:hover{transform:translateY(-5px);box-shadow:0 18px 38px rgba(38,38,38,.1)}
+.stat::after{
+  content:'';position:absolute;right:-30px;top:-30px;width:110px;height:110px;border-radius:50%;
+  background:var(--tint);opacity:.55;
+}
+.st-ic{width:42px;height:42px;border-radius:14px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;position:relative;z-index:1}
+.st-ic svg{width:20px;height:20px;stroke:#fff;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.st-label{font-size:13px;color:var(--text2);position:relative;z-index:1}
+.st-num{font-family:'Mitr';font-weight:600;font-size:31px;line-height:1.25;position:relative;z-index:1}
+.st-foot{font-size:12.5px;color:var(--muted);margin-top:5px;position:relative;z-index:1;min-height:19px}
+
+.card-title{display:flex;align-items:center;gap:10px;font-family:'Mitr';font-weight:500;font-size:16px;margin-bottom:6px}
+.card-sub{color:var(--text2);font-size:13.5px;margin:0}
+
+/* แถบสัดส่วนประเภทการลา */
+.tbar{margin-top:16px}
+.tbar-row{margin-bottom:15px}
+.tbar-top{display:flex;align-items:baseline;gap:8px;font-size:13.5px;margin-bottom:6px}
+.tbar-top b{font-family:'Mitr';font-weight:500;flex:1}
+.tbar-top span{color:var(--text2);font-size:12.5px}
+.tbar-track{height:9px;border-radius:99px;background:var(--soft);overflow:hidden}
+.tbar-fill{height:100%;border-radius:99px;transition:width .8s var(--ease)}
+
+/* กราฟแท่ง */
+.bars{display:flex;align-items:flex-end;gap:12px;height:170px;margin-top:20px}
+.bar{flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;justify-content:flex-end;height:100%}
+.bar-v{
+  width:100%;max-width:64px;border-radius:12px 12px 6px 6px;min-height:6px;
+  background:linear-gradient(180deg,var(--bl2),var(--bl1));
+  transition:height .8s var(--ease);
+}
+.bar-n{font-family:'Mitr';font-size:13px}
+.bar-l{font-size:12px;color:var(--muted)}
+
+/* รายการ */
+.list{display:flex;flex-direction:column}
+.row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--soft)}
+.row:last-child{border-bottom:0}
+.row-ic{width:38px;height:38px;border-radius:12px;flex:0 0 auto;display:flex;align-items:center;justify-content:center;font-family:'Mitr';font-size:13px;color:#fff}
+.row-info{flex:1;min-width:0}
+.row-info b{display:block;font-family:'Mitr';font-weight:500;font-size:14px}
+.row-info small{color:var(--muted);font-size:12.5px}
+.tag{border-radius:999px;padding:4px 13px;font-size:12.5px;font-weight:600;white-space:nowrap}
+.t-pk{background:var(--pk-soft);color:#C62A6B}
+.t-pu{background:var(--pu-soft);color:#5B44C9}
+.t-tl{background:var(--tl-soft);color:#118183}
+.t-bl{background:var(--bl-soft);color:#2A61BD}
+.t-gr{background:var(--gr-soft);color:#12855A}
+
+.empty{text-align:center;color:var(--muted);font-size:13.5px;padding:30px 10px}
+
+/* กล่องติดตามสถานะ */
+.track{background:linear-gradient(135deg,var(--pu-soft),var(--bl-soft));border:1px solid var(--border)}
+.track-form{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
+.track-form input{
+  flex:1;min-width:190px;border:1px solid var(--border);border-radius:14px;padding:12px 16px;
+  font-family:'Sarabun';font-size:14.5px;background:var(--surface);color:var(--text);outline:none;
+  transition:border-color .18s,box-shadow .18s;
+}
+.track-form input:focus{border-color:var(--pu1);box-shadow:0 0 0 4px rgba(116,92,233,.13)}
+.track-form button{
+  border:0;border-radius:14px;padding:12px 26px;cursor:pointer;
+  font-family:'Mitr';font-weight:500;font-size:14.5px;color:#fff;
+  background:linear-gradient(135deg,var(--pu1),var(--pu2));
+  box-shadow:0 8px 20px rgba(116,92,233,.28);transition:all .18s var(--ease);
+}
+.track-form button:hover{transform:translateY(-3px);box-shadow:0 12px 26px rgba(116,92,233,.34)}
+.track-form button:active{transform:scale(.96)}
+
+/* สถานะการโหลด */
+.sk{background:linear-gradient(90deg,var(--soft) 25%,#EAEAE6 50%,var(--soft) 75%);
+  background-size:200% 100%;animation:sh 1.3s infinite;border-radius:9px}
+@keyframes sh{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.sk-num{height:34px;width:62%;margin:2px 0 6px}
+.sk-line{height:12px;width:80%;margin:6px 0}
+.err{background:var(--pk-soft);color:#C62A6B;border-radius:16px;padding:16px 20px;font-size:14px;line-height:1.7}
+.err b{font-family:'Mitr';font-weight:500}
+
+footer{border-top:1px solid var(--border);background:var(--surface);margin-top:40px}
+.foot-in{max-width:1180px;margin:0 auto;padding:28px 20px;display:flex;gap:18px;flex-wrap:wrap;align-items:center}
+.foot-in p{margin:0;font-size:13px;color:var(--muted);line-height:1.8;flex:1;min-width:230px}
+.foot-in a.btn-login{margin-left:auto;text-decoration:none;border-radius:999px;font-size:14px;font-weight:600}
+
+@media(max-width:1000px){.c4{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:860px){
+  .nav-links{
+    position:fixed;left:0;right:0;top:calc(66px + env(safe-area-inset-top,0px));
+    background:var(--surface);border-bottom:1px solid var(--border);
+    flex-direction:column;align-items:stretch;gap:2px;padding:12px 18px 18px;
+    box-shadow:0 18px 34px rgba(38,38,38,.1);display:none;
+  }
+  .nav-links.open{display:flex}
+  .nav-links a{padding:12px 14px;border-radius:13px;text-align:center}
+  .nav-toggle{display:block}
+  .c2{grid-template-columns:1fr}
+}
+@media(max-width:520px){
+  .c4{grid-template-columns:1fr}
+  .hero{padding-top:30px}
+  .bars{height:140px;gap:7px}
+  .brand small{display:none}
+}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-in">
+    <a class="brand" href="#top">
+      <span class="brand-ic">
+        <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M8 3v4M16 3v4M3 10h18M9 15l2 2 4-4"/></svg>
+      </span>
+      <span>
+        <b>ระบบจัดการวันลา</b>
+        <small>คณะวิศวกรรมศาสตร์ มหาวิทยาลัยมหาสารคาม</small>
+      </span>
+    </a>
+    <button class="nav-toggle" id="navToggle" aria-label="เปิดเมนู">
+      <svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    </button>
+    <div class="nav-links" id="navLinks">
+      <a href="#overview">ภาพรวม</a>
+      <a href="#week">สรุปสัปดาห์นี้</a>
+      <a href="#holidays">วันหยุดราชการ</a>
+      <a href="#track">ติดตามสถานะ</a>
+      <a class="btn-login" id="loginTop" href="#">
+        <svg viewBox="0 0 24 24"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3"/></svg>
+        เข้าสู่ระบบ
+      </a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero" id="top">
+  <h1>ภาพรวมการลาของบุคลากร คณะวิศวกรรมศาสตร์</h1>
+  <p>หน้านี้แสดงตัวเลขภาพรวมที่ดึงตรงจากระบบจัดการวันลา เปิดดูได้โดยไม่ต้องเข้าสู่ระบบ
+     บุคลากรที่ต้องการยื่นใบลาหรือตรวจสิทธิคงเหลือของตนเอง กรุณาเข้าสู่ระบบ</p>
+  <div class="hero-meta">
+    <span class="pill"><span class="dot-live"></span>ข้อมูลสด</span>
+    <span class="pill">ข้อมูล ณ <b id="asOf">กำลังโหลด…</b></span>
+    <span class="pill" id="pillUpdated" style="display:none">ปรับปรุงล่าสุด <b id="updatedAt"></b></span>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <div id="errBox" style="display:none"></div>
+
+  <!-- ภาพรวมวันนี้ -->
+  <section id="overview">
+    <div class="grid c4">
+      <div class="card stat" style="--tint:var(--o-soft)">
+        <div class="st-ic g-o"><svg viewBox="0 0 24 24"><path d="M17 20v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9.5" cy="7" r="4"/><path d="M22 20v-2a4 4 0 0 0-3-3.87"/></svg></div>
+        <div class="st-label">บุคลากรทั้งหมด</div>
+        <div class="st-num" id="nTotal"><div class="sk sk-num"></div></div>
+        <div class="st-foot" id="fTotal"></div>
+      </div>
+      <div class="card stat" style="--tint:var(--pk-soft)">
+        <div class="st-ic g-pk"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+        <div class="st-label">ผู้ลาวันนี้</div>
+        <div class="st-num" id="nToday"><div class="sk sk-num"></div></div>
+        <div class="st-foot" id="fToday"></div>
+      </div>
+      <div class="card stat" style="--tint:var(--pu-soft)">
+        <div class="st-ic g-pu"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
+        <div class="st-label">ใบลารออนุมัติ</div>
+        <div class="st-num" id="nPending"><div class="sk sk-num"></div></div>
+        <div class="st-foot" id="fPending"></div>
+      </div>
+      <div class="card stat" style="--tint:var(--tl-soft)">
+        <div class="st-ic g-tl"><svg viewBox="0 0 24 24"><path d="M3 17l5-6 4 4 5-7 4 5"/></svg></div>
+        <div class="st-label">สัปดาห์นี้</div>
+        <div class="st-num" id="nWeek"><div class="sk sk-num"></div></div>
+        <div class="st-foot" id="fWeek"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- สรุปสัปดาห์ + ผู้ลาวันนี้ -->
+  <section id="week">
+    <div class="sec-head">
+      <span class="sec-ic g-pu"><svg viewBox="0 0 24 24"><path d="M3 17l5-6 4 4 5-7 4 5"/></svg></span>
+      <h2>สรุปการลาสัปดาห์นี้</h2>
+    </div>
+    <div class="grid c2">
+      <div class="card">
+        <div class="card-title">แยกตามประเภทการลา</div>
+        <p class="card-sub" id="weekRange">กำลังโหลดข้อมูล…</p>
+        <div class="tbar" id="weekTypes">
+          <div class="sk sk-line" style="width:100%"></div>
+          <div class="sk sk-line" style="width:70%"></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">บุคลากรที่ลาวันนี้</div>
+        <p class="card-sub" id="todaySub">กำลังโหลดข้อมูล…</p>
+        <div class="list" id="todayList"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- แนวโน้ม -->
+  <section id="trend">
+    <div class="sec-head">
+      <span class="sec-ic g-bl"><svg viewBox="0 0 24 24"><path d="M3 20h18M7 16v-5M12 16V7M17 16v-8"/></svg></span>
+      <h2>แนวโน้มวันลา 6 เดือนล่าสุด</h2>
+    </div>
+    <div class="card">
+      <p class="card-sub">นับเฉพาะใบลาที่ได้รับอนุมัติแล้ว หน่วยเป็นวันทำการ</p>
+      <div class="bars" id="trendBars"></div>
+    </div>
+  </section>
+
+  <!-- วันหยุด -->
+  <section id="holidays">
+    <div class="sec-head">
+      <span class="sec-ic g-pk"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9L17 7M7 17l-2.1 2.1"/></svg></span>
+      <h2>วันหยุดราชการที่จะถึง</h2>
+    </div>
+    <div class="card">
+      <div class="list" id="holidayList"><div class="sk sk-line" style="width:60%"></div></div>
+    </div>
+  </section>
+
+  <!-- ติดตามสถานะ -->
+  <section id="track">
+    <div class="sec-head">
+      <span class="sec-ic g-gr"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></span>
+      <h2>ติดตามสถานะใบลาของท่าน</h2>
+    </div>
+    <div class="card track">
+      <p class="card-sub">
+        ผู้ที่ยื่นใบลาไว้จะได้รับอีเมลพร้อม QR และลิงก์ติดตามสถานะ
+        หากมีรหัสติดตามอยู่แล้ว กรอกด้านล่างเพื่อเปิดดูได้ทันทีโดยไม่ต้องเข้าสู่ระบบ
+      </p>
+      <div class="track-form">
+        <input id="trackCode" type="text" inputmode="latin" autocomplete="off" spellcheck="false"
+               placeholder="กรอกรหัสติดตาม หรือวางลิงก์ที่ได้รับทางอีเมล">
+        <button id="trackGo">เปิดดูสถานะ</button>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="foot-in">
+    <p>
+      <b style="font-family:'Mitr';font-weight:500;color:var(--text)">ระบบจัดการวันลา</b> —
+      คณะวิศวกรรมศาสตร์ มหาวิทยาลัยมหาสารคาม<br>
+      หน้านี้แสดงเฉพาะตัวเลขภาพรวม ไม่มีรายละเอียดใบลารายบุคคล
+      สอบถามเพิ่มเติมที่งานบุคคล สำนักงานเลขานุการคณบดี
+    </p>
+    <a class="btn-login" id="loginBottom" href="#">
+      <svg viewBox="0 0 24 24"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3"/></svg>
+      เข้าสู่ระบบ
+    </a>
+  </div>
+</footer>
+
+<script>
+/* ===================================================================
+   ที่อยู่ของระบบหลัง — แก้บรรทัดเดียวนี้เมื่อ Deploy ใหม่แล้ว URL เปลี่ยน
+   =================================================================== */
+var APP_URL = 'https://script.google.com/macros/s/AKfycbzn6b1edfqUSLRn-v320rQafQaY2Nycnjq72hCgaP42Q0mDZQGgvV8FC9LovAVso3fNpw/exec';
+
+document.getElementById('loginTop').href = APP_URL;
+document.getElementById('loginBottom').href = APP_URL;
+document.getElementById('loginTop').target = '_blank';
+document.getElementById('loginBottom').target = '_blank';
+
+var $ = function(id){ return document.getElementById(id); };
+function esc(v){
+  return String(v==null?'':v)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function num(n){ return (Number(n)||0).toLocaleString('th-TH'); }
+
+var TH_MONTH = ['','มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน',
+                'กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
+var TH_SHORT = ['','ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+
+function thDate(ymd, short){
+  if(!ymd) return '-';
+  var p = String(ymd).split('-');
+  if(p.length !== 3) return ymd;
+  var d = Number(p[2]), m = Number(p[1]), y = Number(p[0]) + 543;
+  return short ? (d+' '+TH_SHORT[m]+' '+String(y).slice(-2)) : (d+' '+TH_MONTH[m]+' '+y);
+}
+function thRange(a,b){
+  if(!a) return '-';
+  if(!b || a===b) return thDate(a);
+  return thDate(a,true)+' – '+thDate(b,true);
+}
+
+/* สีประจำประเภทการลา ให้ตรงกับในระบบ */
+function typeTag(t){
+  if(t==='ลาป่วย') return 't-pk';
+  if(t==='ลากิจส่วนตัว') return 't-pu';
+  if(t==='ลาพักผ่อน') return 't-tl';
+  if(t==='ลาคลอดบุตร') return 't-gr';
+  return 't-bl';
+}
+function typeGrad(t){
+  if(t==='ลาป่วย') return 'linear-gradient(90deg,var(--pk1),var(--pk2))';
+  if(t==='ลากิจส่วนตัว') return 'linear-gradient(90deg,var(--pu1),var(--pu2))';
+  if(t==='ลาพักผ่อน') return 'linear-gradient(90deg,var(--tl1),var(--tl2))';
+  if(t==='ลาคลอดบุตร') return 'linear-gradient(90deg,var(--gr1),var(--gr2))';
+  return 'linear-gradient(90deg,var(--bl1),var(--bl2))';
+}
+function avatarGrad(seed){
+  var g = ['var(--o1),var(--o2)','var(--pk1),var(--pk2)','var(--bl1),var(--bl2)',
+           'var(--gr1),var(--gr2)','var(--tl1),var(--tl2)','var(--pu1),var(--pu2)'];
+  var h = 0, s = String(seed||'');
+  for(var i=0;i<s.length;i++) h = (h*31 + s.charCodeAt(i)) % 997;
+  return 'linear-gradient(135deg,'+g[h % g.length]+')';
+}
+
+/* -------------------------------------------------------------------
+   ดึงข้อมูลแบบ JSONP
+   Apps Script ไม่ส่งหัว CORS หน้าเว็บภายนอกจึงใช้ fetch ตรงไม่ได้
+   วิธีที่ใช้ได้คือแทรกแท็ก script แล้วให้ฝั่งระบบห่อผลลัพธ์ด้วยชื่อฟังก์ชัน
+   ------------------------------------------------------------------- */
+var loaded = false;
+
+window.onPublicData = function(d){
+  loaded = true;
+  if(!d || !d.ok){
+    showError(d && d.error ? d.error : 'ระบบไม่ได้ส่งข้อมูลกลับมา');
+    return;
+  }
+  render(d);
+};
+
+function loadData(){
+  var s = document.createElement('script');
+  s.src = APP_URL + '?publicData=1&callback=onPublicData&_=' + Date.now();
+  s.onerror = function(){ showError('เชื่อมต่อระบบไม่สำเร็จ'); };
+  document.body.appendChild(s);
+
+  setTimeout(function(){
+    if(!loaded) showError('ระบบไม่ตอบกลับภายในเวลาที่กำหนด');
+  }, 15000);
+}
+
+function showError(msg){
+  if(loaded) return;
+  loaded = true;
+  $('errBox').style.display = 'block';
+  $('errBox').innerHTML =
+    '<div class="err"><b>ยังแสดงข้อมูลภาพรวมไม่ได้</b><br>'+esc(msg)+
+    '<br><br>สาเหตุที่พบบ่อยคือระบบยังไม่ได้เปิดการเผยแพร่ข้อมูล หรือที่อยู่ของระบบเปลี่ยนไปหลัง Deploy ใหม่ '+
+    'ท่านยังเข้าใช้งานระบบได้ตามปกติผ่านปุ่มเข้าสู่ระบบ</div>';
+  $('asOf').textContent = 'ไม่สามารถเชื่อมต่อได้';
+  ['nTotal','nToday','nPending','nWeek'].forEach(function(id){ $(id).textContent = '—'; });
+  $('weekRange').textContent = 'ไม่มีข้อมูล';
+  $('weekTypes').innerHTML = '<div class="empty">ไม่มีข้อมูล</div>';
+  $('todaySub').textContent = '';
+  $('todayList').innerHTML = '<div class="empty">ไม่มีข้อมูล</div>';
+  $('trendBars').innerHTML = '<div class="empty">ไม่มีข้อมูล</div>';
+  $('holidayList').innerHTML = '<div class="empty">ไม่มีข้อมูล</div>';
+}
+
+function render(d){
+  if(d.appUrl){
+    APP_URL = d.appUrl;
+    $('loginTop').href = APP_URL;
+    $('loginBottom').href = APP_URL;
+  }
+  $('asOf').textContent = thDate(d.today);
+  if(d.updatedAt){
+    $('updatedAt').textContent = d.updatedAt;
+    $('pillUpdated').style.display = '';
+  }
+
+  /* การ์ดตัวเลข */
+  $('nTotal').textContent = num(d.totalPersonnel)+' คน';
+  $('fTotal').textContent = 'ปฏิบัติงานวันนี้ '+num(Math.max(0, d.totalPersonnel - d.todayCount))+' คน';
+
+  $('nToday').textContent = num(d.todayCount)+' คน';
+  var tb = d.todayByType || {};
+  var keys = Object.keys(tb);
+  $('fToday').innerHTML = keys.length
+    ? keys.map(function(k){ return '<span class="tag '+typeTag(k)+'" style="font-size:11.5px;padding:2px 9px">'+esc(k)+' '+tb[k]+'</span>'; }).join(' ')
+    : 'ไม่มีผู้ลาในวันนี้';
+
+  $('nPending').textContent = num(d.pendingCount)+' รายการ';
+  $('fPending').textContent = d.pendingCount ? 'รอการพิจารณาจากผู้บังคับบัญชา' : 'ไม่มีรายการค้าง';
+
+  var w = d.week || {};
+  $('nWeek').textContent = num(w.times)+' ครั้ง';
+  $('fWeek').textContent = 'รวม '+num(w.days)+' วัน • '+thRange(w.start, w.end);
+
+  /* สัดส่วนประเภทการลาในสัปดาห์ */
+  $('weekRange').textContent = thRange(w.start, w.end)+' • ลา '+num(w.leaverCount)+' คน จากทั้งหมด '+num(d.totalPersonnel)+' คน';
+  var types = (w.byType || []).slice().sort(function(a,b){ return b.days - a.days; });
+  if(!types.length){
+    $('weekTypes').innerHTML = '<div class="empty">สัปดาห์นี้ยังไม่มีการลา</div>';
+  }else{
+    var maxD = types[0].days || 1;
+    $('weekTypes').innerHTML = types.map(function(t){
+      var pct = Math.max(4, Math.round(t.days / maxD * 100));
+      return '<div class="tbar-row">'+
+        '<div class="tbar-top"><b>'+esc(t.type)+'</b>'+
+        '<span>'+num(t.people)+' คน • '+num(t.times)+' ครั้ง • '+num(t.days)+' วัน</span></div>'+
+        '<div class="tbar-track"><div class="tbar-fill" style="width:'+pct+'%;background:'+typeGrad(t.type)+'"></div></div>'+
+        '</div>';
+    }).join('');
+  }
+
+  /* ผู้ลาวันนี้ */
+  var list = d.todayList || [];
+  if(!list.length){
+    $('todaySub').textContent = 'วันนี้บุคลากรปฏิบัติงานครบทุกคน';
+    $('todayList').innerHTML = '';
+  }else if(!d.showNames){
+    $('todaySub').textContent = 'วันนี้มีผู้ลา '+num(d.todayCount)+' คน';
+    $('todayList').innerHTML =
+      '<div class="empty">หน่วยงานปิดการแสดงรายชื่อในหน้าสาธารณะไว้ '+
+      'เนื่องจากชื่อผู้ลาและประเภทการลาเป็นข้อมูลส่วนบุคคล<br>'+
+      'ผู้มีสิทธิ์ดูรายละเอียดกรุณาเข้าสู่ระบบ</div>';
+  }else{
+    $('todaySub').textContent = 'วันนี้มีผู้ลา '+num(d.todayCount)+' คน';
+    $('todayList').innerHTML = list.map(function(x){
+      var ini = String(x.name||'?').replace(/^(นาย|นางสาว|นาง)/,'').trim().charAt(0) || '?';
+      return '<div class="row">'+
+        '<div class="row-ic" style="background:'+avatarGrad(x.name)+'">'+esc(ini)+'</div>'+
+        '<div class="row-info"><b>'+esc(x.name)+'</b><small>'+esc(x.department||'-')+'</small></div>'+
+        '<span class="tag '+typeTag(x.type)+'">'+esc(x.type)+'</span></div>';
+    }).join('');
+  }
+
+  /* แนวโน้ม 6 เดือน */
+  var tr = d.trend || [];
+  var maxT = 1;
+  tr.forEach(function(t){ if(t.days > maxT) maxT = t.days; });
+  $('trendBars').innerHTML = tr.map(function(t){
+    var h = Math.max(4, Math.round(t.days / maxT * 100));
+    return '<div class="bar">'+
+      '<div class="bar-n">'+num(t.days)+'</div>'+
+      '<div class="bar-v" style="height:'+h+'%"></div>'+
+      '<div class="bar-l">'+TH_SHORT[t.month]+'</div></div>';
+  }).join('');
+
+  /* วันหยุด */
+  var hd = d.holidays || [];
+  $('holidayList').innerHTML = hd.length
+    ? hd.map(function(h){
+        return '<div class="row">'+
+          '<div class="row-ic" style="background:linear-gradient(135deg,var(--pk1),var(--pk2))">'+
+          '<svg viewBox="0 0 24 24" style="width:17px;height:17px;stroke:#fff;fill:none;stroke-width:1.9"><circle cx="12" cy="12" r="4"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2"/></svg></div>'+
+          '<div class="row-info"><b>'+esc(h.name)+'</b><small>'+esc(thDate(h.date))+'</small></div>'+
+          '<span class="tag t-pk">'+esc(h.type||'วันหยุด')+'</span></div>';
+      }).join('')
+    : '<div class="empty">ยังไม่มีวันหยุดที่บันทึกไว้ล่วงหน้า</div>';
+}
+
+/* ---- ติดตามสถานะ ---- */
+function openTrack(){
+  var v = $('trackCode').value.trim();
+  if(!v){ $('trackCode').focus(); return; }
+  var url;
+  if(/^https?:\/\//i.test(v)){
+    url = v;                                   /* วางลิงก์เต็มมาก็เปิดให้เลย */
+  }else{
+    var m = v.match(/track=([A-Za-z0-9_-]+)/); /* เผื่อวางมาเฉพาะท่อนพารามิเตอร์ */
+    var code = m ? m[1] : v.replace(/[^A-Za-z0-9_-]/g,'');
+    if(!code){ $('trackCode').focus(); return; }
+    url = APP_URL + '?track=' + encodeURIComponent(code);
+  }
+  window.open(url, '_blank', 'noopener');
+}
+$('trackGo').addEventListener('click', openTrack);
+$('trackCode').addEventListener('keydown', function(e){ if(e.key === 'Enter') openTrack(); });
+
+/* ---- เมนูบนมือถือ ---- */
+$('navToggle').addEventListener('click', function(){
+  $('navLinks').classList.toggle('open');
+});
+Array.prototype.forEach.call(document.querySelectorAll('.nav-links a'), function(a){
+  a.addEventListener('click', function(){ $('navLinks').classList.remove('open'); });
+});
+
+loadData();
+</script>
+</body>
+</html>

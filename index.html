@@ -202,6 +202,91 @@ section{scroll-margin-top:90px}
 footer{border-top:1px solid var(--border);background:var(--surface);margin-top:40px}
 .foot-in{max-width:1180px;margin:0 auto;padding:30px 20px;display:flex;gap:24px;flex-wrap:wrap;align-items:stretch}
 
+/* ---------- ตัวชี้วัด ---------- */
+.kpi-strip{
+  display:grid;grid-template-columns:repeat(5,1fr);gap:1px;
+  background:var(--border);border:1px solid var(--border);border-radius:20px;overflow:hidden;
+}
+.kpi-cell{background:var(--surface);padding:18px 14px;text-align:center;position:relative;transition:background .2s}
+.kpi-cell:hover{background:var(--soft)}
+.kpi-cell i{display:block;height:4px;border-radius:99px;width:34px;margin:0 auto 11px}
+.kpi-cell b{display:block;font-family:'Mitr';font-weight:600;font-size:26px;line-height:1.2}
+.kpi-cell small{display:block;font-size:12.5px;color:var(--text2);margin-top:3px}
+.k-all i{background:linear-gradient(90deg,var(--bl1),var(--bl2))}   .k-all b{color:#2A61BD}
+.k-pend i{background:linear-gradient(90deg,var(--pu1),var(--pu2))}  .k-pend b{color:#5B44C9}
+.k-ok i{background:linear-gradient(90deg,var(--gr1),var(--gr2))}    .k-ok b{color:#17864B}
+.k-no i{background:linear-gradient(90deg,var(--pk1),var(--pk2))}    .k-no b{color:#C62A6B}
+.k-cx i{background:linear-gradient(90deg,#9A9A94,#C4C4BE)}          .k-cx b{color:#7A7A75}
+
+.kpi-card{
+  position:relative;overflow:hidden;border-radius:22px;padding:22px;color:#fff;
+  background-size:200% 200%;animation:kpiFlow 12s ease infinite;
+  box-shadow:0 14px 32px rgba(38,38,38,.12);
+  transition:transform .22s var(--ease),box-shadow .22s var(--ease);
+}
+.kpi-card:hover{transform:translateY(-5px);box-shadow:0 22px 44px rgba(38,38,38,.18)}
+@keyframes kpiFlow{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+.kpi-card::after{
+  content:'';position:absolute;right:-34px;top:-34px;width:118px;height:118px;border-radius:50%;
+  background:rgba(255,255,255,.16);
+}
+.kpi-ic{
+  width:40px;height:40px;border-radius:13px;background:rgba(255,255,255,.22);
+  display:flex;align-items:center;justify-content:center;margin-bottom:14px;position:relative;z-index:1;
+}
+.kpi-ic svg{width:20px;height:20px;stroke:#fff;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.kpi-card .lb{font-size:13px;opacity:.92;position:relative;z-index:1}
+.kpi-card .vl{font-family:'Mitr';font-weight:600;font-size:29px;line-height:1.25;position:relative;z-index:1}
+.kpi-card .ft{font-size:12.3px;opacity:.86;margin-top:5px;position:relative;z-index:1;line-height:1.6}
+.kv-green{background:linear-gradient(130deg,#12A85F,#59DE91,#20BFC1)}
+.kv-amber{background:linear-gradient(130deg,#E8820E,#FFC653,#FF8A24)}
+.kv-violet{background:linear-gradient(130deg,#5B44C9,#9C75F6,#377BEA)}
+.kv-rose{background:linear-gradient(130deg,#D62C74,#FF79AD,#FF8A24)}
+
+/* ---------- ปฏิทิน ---------- */
+.cal-bar{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:16px}
+.cal-nav{
+  width:34px;height:34px;border-radius:11px;border:1px solid var(--border);background:var(--surface);
+  cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .17s var(--ease);
+}
+.cal-nav:hover{border-color:var(--tl1);transform:translateY(-2px)}
+.cal-nav:active{transform:scale(.94)}
+.cal-nav svg{width:17px;height:17px;stroke:var(--text);fill:none;stroke-width:2.1;stroke-linecap:round;stroke-linejoin:round}
+.cal-title{font-family:'Mitr';font-weight:500;font-size:17px;min-width:158px;text-align:center}
+.cal-today{
+  border:1px solid var(--border);background:var(--surface);border-radius:999px;padding:7px 16px;
+  cursor:pointer;font-family:'Sarabun';font-size:13px;color:var(--text2);transition:all .17s var(--ease);
+}
+.cal-today:hover{border-color:var(--tl1);color:var(--tl1);transform:translateY(-2px)}
+.cal-legend{margin-left:auto;font-size:12.5px;color:var(--text2);display:flex;align-items:center;gap:6px}
+.lg{width:11px;height:11px;border-radius:4px;display:inline-block;margin-left:10px}
+.lg-a{background:linear-gradient(135deg,var(--gr1),var(--gr2))}
+.lg-p{background:linear-gradient(135deg,var(--pu1),var(--pu2))}
+.cal-dow{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:6px}
+.cal-dow span{text-align:center;font-size:12.5px;color:var(--muted);padding:4px 0}
+.cal-dow .we{color:var(--pk1)}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.cd{
+  aspect-ratio:1/1;border-radius:14px;background:var(--soft);border:1px solid transparent;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+  cursor:default;position:relative;transition:all .18s var(--ease);padding:4px;
+}
+.cd.void{background:transparent}
+.cd .dn{font-family:'Mitr';font-size:13.5px;color:var(--text2);line-height:1}
+.cd .cnt{
+  font-family:'Mitr';font-weight:600;font-size:15px;line-height:1;
+  color:#fff;border-radius:9px;padding:3px 9px;min-width:26px;text-align:center;
+}
+.cd.has{cursor:pointer;background:var(--surface);border-color:var(--border)}
+.cd.has:hover{transform:translateY(-3px) scale(1.04);box-shadow:0 10px 22px rgba(38,38,38,.13);z-index:2}
+.cd.has .dn{color:var(--text)}
+.cd.sel{border-color:var(--tl1);box-shadow:0 0 0 3px var(--tl-soft)}
+.cd.today{border-color:var(--o1)}
+.cd.today .dn{color:var(--o1);font-weight:600}
+.cd.we .dn{color:var(--muted)}
+.cal-foot{margin:16px 0 0;font-size:13.5px;color:var(--text2);line-height:1.8;min-height:24px}
+.cal-foot b{font-family:'Mitr';font-weight:500;color:var(--text)}
+
 /* ---------- ช่องทางยื่นใบลา ---------- */
 .cta{
   position:relative;border-radius:30px;overflow:hidden;margin-top:6px;
@@ -294,7 +379,7 @@ footer{border-top:1px solid var(--border);background:var(--surface);margin-top:4
 .credit-dev a{color:var(--bl1);text-decoration:none}
 .credit-dev a:hover{text-decoration:underline}
 
-@media(max-width:1000px){.c4{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:1000px){.c4{grid-template-columns:repeat(2,1fr)}.kpi-strip{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:1180px){.hero h1{white-space:normal}}
 @media(max-width:860px){
   .cta-in{padding:36px 22px}
@@ -313,6 +398,14 @@ footer{border-top:1px solid var(--border);background:var(--surface);margin-top:4
   .c4{grid-template-columns:1fr}
   .hero{padding-top:30px}
   .star svg{width:31px;height:31px}
+  .kpi-strip{grid-template-columns:repeat(2,1fr)}
+  .kpi-cell b{font-size:22px}
+  .cal-grid{gap:4px}
+  .cd{border-radius:11px;gap:1px}
+  .cd .dn{font-size:11.5px}
+  .cd .cnt{font-size:12px;padding:2px 6px;min-width:20px}
+  .cal-legend{margin-left:0;width:100%}
+  .cal-title{min-width:0;flex:1}
   .rate-word{width:100%;margin:6px 0 0}
   .cta-btn{padding:14px 28px;font-size:16px;width:100%;justify-content:center}
   .bars{height:140px;gap:7px}
@@ -339,6 +432,8 @@ footer{border-top:1px solid var(--border);background:var(--surface);margin-top:4
     </button>
     <div class="nav-links" id="navLinks">
       <a href="#overview">ภาพรวม</a>
+      <a href="#kpi">ตัวชี้วัด</a>
+      <a href="#calendar">ปฏิทิน</a>
       <a href="#week">สรุปสัปดาห์นี้</a>
       <a href="#holidays">วันหยุดราชการ</a>
       <a href="#apply">ยื่นใบลา</a>
@@ -395,6 +490,51 @@ footer{border-top:1px solid var(--border);background:var(--surface);margin-top:4
         <div class="st-num" id="nWeek"><div class="sk sk-num"></div></div>
         <div class="st-foot" id="fWeek"></div>
       </div>
+    </div>
+  </section>
+
+  <!-- ตัวชี้วัด -->
+  <section id="kpi">
+    <div class="sec-head">
+      <span class="sec-ic g-gr"><svg viewBox="0 0 24 24"><path d="M3 20h18M7 16v-5M12 16V7M17 16v-8"/></svg></span>
+      <h2>ตัวชี้วัดผลการดำเนินงาน</h2>
+    </div>
+
+    <div class="kpi-strip" id="kpiStatus">
+      <div class="sk sk-line" style="width:100%;height:60px"></div>
+    </div>
+
+    <div class="grid c4" id="kpiCards" style="margin-top:16px"></div>
+  </section>
+
+  <!-- ปฏิทินรายวัน -->
+  <section id="calendar">
+    <div class="sec-head">
+      <span class="sec-ic g-tl"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M8 3v4M16 3v4M3 10h18"/></svg></span>
+      <h2>ปฏิทินสรุปผู้ลารายวัน</h2>
+    </div>
+    <div class="card">
+      <div class="cal-bar">
+        <button type="button" class="cal-nav" id="calPrev" aria-label="เดือนก่อนหน้า">
+          <svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg>
+        </button>
+        <b class="cal-title" id="calTitle">—</b>
+        <button type="button" class="cal-nav" id="calNext" aria-label="เดือนถัดไป">
+          <svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
+        </button>
+        <button type="button" class="cal-today" id="calToday">เดือนนี้</button>
+        <span class="cal-legend">
+          <i class="lg lg-a"></i>อนุมัติแล้ว
+          <i class="lg lg-p"></i>รออนุมัติ
+        </span>
+      </div>
+
+      <div class="cal-dow">
+        <span>จ</span><span>อ</span><span>พ</span><span>พฤ</span><span>ศ</span>
+        <span class="we">ส</span><span class="we">อา</span>
+      </div>
+      <div class="cal-grid" id="calGrid"></div>
+      <p class="cal-foot" id="calFoot">เลือกวันเพื่อดูรายละเอียด</p>
     </div>
   </section>
 
@@ -680,6 +820,8 @@ function render(d){
   if(d.appUrl) APP_URL = d.appUrl;
   applyAppUrl();
   if(d.feedback) paintRateStat(d.feedback);
+  if(d.stat) renderKpi(d);
+  if(d.calendar) initCalendar(d);
   $('asOf').textContent = thDate(d.today);
   if(d.updatedAt){
     $('updatedAt').textContent = d.updatedAt;
@@ -767,6 +909,168 @@ function render(d){
       }).join('')
     : '<div class="empty">ยังไม่มีวันหยุดที่บันทึกไว้ล่วงหน้า</div>';
 }
+
+/* -------------------------------------------------------------------
+   ตัวชี้วัดผลการดำเนินงาน
+   ------------------------------------------------------------------- */
+function fmtMinutes(min){
+  min = Math.round(Number(min) || 0);
+  if(min < 60) return min + ' นาที';
+  var h = Math.floor(min / 60), m = min % 60;
+  if(h < 24) return num(h) + ' ชั่วโมง' + (m ? ' ' + m + ' นาที' : '');
+  var wd = Math.floor(h / 7);                    /* คิดวันทำงานละ 7 ชั่วโมง */
+  return num(h) + ' ชั่วโมง (≈ ' + num(wd) + ' วันทำงาน)';
+}
+
+function renderKpi(d){
+  var st = d.stat, k = d.kpi;
+
+  $('kpiStatus').innerHTML =
+    cell('k-all','จำนวนเรื่องทั้งหมด', st.total) +
+    cell('k-pend','รออนุมัติ', st.pending) +
+    cell('k-ok','อนุมัติแล้ว', st.approved) +
+    cell('k-no','ไม่อนุมัติ', st.rejected) +
+    cell('k-cx','ยกเลิก', st.cancelled);
+
+  function cell(cls,label,v){
+    return '<div class="kpi-cell '+cls+'"><i></i><b>'+num(v)+'</b><small>'+esc(label)+'</small></div>';
+  }
+
+  var cards = [
+    {
+      cls:'kv-violet',
+      ic:'<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
+      lb:'ค่าเฉลี่ยการลาต่อวัน',
+      vl:num(k.avgPerDay)+' คน',
+      ft:'เฉลี่ยจากข้อมูลย้อนหลัง 365 วัน นับเฉพาะใบลาที่อนุมัติแล้ว'
+    },
+    {
+      cls:'kv-green',
+      ic:'<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/>',
+      lb:'กระดาษที่ลดการใช้',
+      vl:num(k.paperSheets)+' แผ่น',
+      ft:num(k.total)+' เรื่อง × '+k.paperPerDoc+' แผ่นต่อเรื่อง'
+    },
+    {
+      cls:'kv-amber',
+      ic:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+      lb:'เวลาที่ประหยัดได้สะสม',
+      vl:fmtMinutes(k.minutesSaved),
+      ft:num(k.total)+' เรื่อง × '+k.minSavedPerDoc+' นาทีต่อเรื่อง เทียบกับการเดินเอกสาร'
+    },
+    {
+      cls:'kv-rose',
+      ic:'<path d="m9 11 3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>',
+      lb:'อัตราความสำเร็จเฉลี่ย',
+      vl:(Number(k.successRate)||0).toFixed(1)+'%',
+      ft:'อนุมัติ '+num(st.approved)+' จากเรื่องที่พิจารณาแล้ว '+num(st.approved+st.rejected+st.cancelled)+' เรื่อง'
+    }
+  ];
+
+  var html = cards.map(function(c){
+    return '<div class="kpi-card '+c.cls+'">'+
+      '<div class="kpi-ic"><svg viewBox="0 0 24 24">'+c.ic+'</svg></div>'+
+      '<div class="lb">'+esc(c.lb)+'</div>'+
+      '<div class="vl">'+esc(c.vl)+'</div>'+
+      '<div class="ft">'+esc(c.ft)+'</div></div>';
+  }).join('');
+
+  /* เวลาปฏิบัติงานรวม วางเต็มแถวด้านล่าง เพราะเป็นตัวเลขสะสมภาพรวม */
+  html += '<div class="kpi-card kv-violet" style="grid-column:1/-1;background:linear-gradient(120deg,#3F7BEA,#20BFC1,#5B44C9)">'+
+    '<div class="kpi-ic"><svg viewBox="0 0 24 24"><path d="M3 20h18M7 16v-5M12 16V7M17 16v-8"/></svg></div>'+
+    '<div class="lb">เวลาปฏิบัติงานรวมของระบบ</div>'+
+    '<div class="vl">'+esc(fmtMinutes(k.minutesWork))+'</div>'+
+    '<div class="ft">'+num(k.total)+' เรื่อง × '+k.minWorkPerDoc+' นาทีต่อเรื่อง</div></div>';
+
+  $('kpiCards').innerHTML = html;
+}
+
+/* -------------------------------------------------------------------
+   ปฏิทินสรุปผู้ลารายวัน — พลิกดูย้อนหลังได้โดยไม่ต้องขอข้อมูลใหม่
+   ------------------------------------------------------------------- */
+var CAL = { data:{}, y:0, m:0, today:'', sel:'' };
+
+function initCalendar(d){
+  CAL.data = d.calendar || {};
+  CAL.today = d.today || '';
+  if(!CAL.y){
+    var p = String(CAL.today).split('-');
+    CAL.y = Number(p[0]) || new Date().getFullYear();
+    CAL.m = Number(p[1]) || (new Date().getMonth() + 1);
+  }
+  drawCalendar();
+}
+
+function shiftMonth(n){
+  var m = CAL.m + n, y = CAL.y;
+  while(m > 12){ m -= 12; y++; }
+  while(m < 1){ m += 12; y--; }
+  CAL.m = m; CAL.y = y; CAL.sel = '';
+  drawCalendar();
+}
+
+function pad2(n){ return (n < 10 ? '0' : '') + n; }
+
+function drawCalendar(){
+  var y = CAL.y, m = CAL.m;
+  $('calTitle').textContent = TH_MONTH[m] + ' ' + (y + 543);
+
+  var first = new Date(y, m - 1, 1);
+  var lead = (first.getDay() + 6) % 7;           /* ให้สัปดาห์เริ่มวันจันทร์ */
+  var days = new Date(y, m, 0).getDate();
+
+  var html = '';
+  for(var i = 0; i < lead; i++) html += '<div class="cd void"></div>';
+
+  var mTotalA = 0, mTotalP = 0, mDays = 0;
+  for(var dnum = 1; dnum <= days; dnum++){
+    var key = y + '-' + pad2(m) + '-' + pad2(dnum);
+    var c = CAL.data[key];
+    var dow = new Date(y, m - 1, dnum).getDay();
+    var we = (dow === 0 || dow === 6);
+    var cls = 'cd' + (we ? ' we' : '') + (key === CAL.today ? ' today' : '') + (key === CAL.sel ? ' sel' : '');
+    var badge = '';
+    if(c && (c.a || c.p)){
+      cls += ' has';
+      mTotalA += c.a; mTotalP += c.p; mDays++;
+      var tot = c.a + c.p;
+      /* สีเข้มขึ้นตามจำนวนคน ให้กวาดตาเห็นวันที่คนลาเยอะได้ทันที */
+      var bg = c.a >= c.p
+        ? 'linear-gradient(135deg,var(--gr1),var(--gr2))'
+        : 'linear-gradient(135deg,var(--pu1),var(--pu2))';
+      var op = Math.min(1, .55 + tot * .15);
+      badge = '<span class="cnt" style="background:'+bg+';opacity:'+op.toFixed(2)+'">'+tot+'</span>';
+    }
+    html += '<div class="'+cls+'" data-k="'+key+'"><span class="dn">'+dnum+'</span>'+badge+'</div>';
+  }
+  $('calGrid').innerHTML = html;
+
+  $('calFoot').innerHTML = mDays
+    ? ('เดือนนี้มีวันที่มีผู้ลา <b>'+mDays+' วัน</b> • รวมอนุมัติแล้ว <b>'+num(mTotalA)+' คน-วัน</b>'+
+       (mTotalP ? ' • รออนุมัติ <b>'+num(mTotalP)+' คน-วัน</b>' : '') +
+       ' — แตะที่วันเพื่อดูรายละเอียด')
+    : 'เดือนนี้ยังไม่มีข้อมูลการลา';
+
+  Array.prototype.forEach.call($('calGrid').querySelectorAll('.cd.has'), function(el){
+    el.addEventListener('click', function(){
+      CAL.sel = el.getAttribute('data-k');
+      drawCalendar();
+      var c = CAL.data[CAL.sel] || { a:0, p:0 };
+      $('calFoot').innerHTML =
+        '<b>'+esc(thDate(CAL.sel))+'</b> — อนุมัติแล้ว <b>'+num(c.a)+' คน</b>'+
+        (c.p ? ' • รออนุมัติ <b>'+num(c.p)+' คน</b>' : '') +
+        ' <span style="color:var(--muted)">(หน้าสาธารณะแสดงเฉพาะจำนวน ไม่แสดงรายชื่อ)</span>';
+    });
+  });
+}
+
+$('calPrev').addEventListener('click', function(){ shiftMonth(-1); });
+$('calNext').addEventListener('click', function(){ shiftMonth(1); });
+$('calToday').addEventListener('click', function(){
+  var p = String(CAL.today).split('-');
+  CAL.y = Number(p[0]); CAL.m = Number(p[1]); CAL.sel = '';
+  drawCalendar();
+});
 
 /* ---- ตั้งที่อยู่ระบบให้ทุกปุ่ม ---- */
 function applyAppUrl(){

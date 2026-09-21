@@ -901,6 +901,48 @@ function jsonp(params, onDone, onFail, timeoutMs){
   document.body.appendChild(el);
 }
 
+/**
+ * เรียกข้อมูลจากระบบ — ลองสองวิธีเรียงตามความน่าเชื่อถือ
+ *
+ * วิธีที่ 1 fetch แบบ credentials:'omit'
+ *   ไม่ส่งคุกกี้ Google ไปด้วย Google จึงเสิร์ฟหน้าสาธารณะให้ตรง ๆ
+ *   แก้ปัญหาที่ Chrome ซึ่งล็อกอินหลายบัญชีถูกพาไปหน้าเลือกบัญชี
+ *   แล้วได้ HTML กลับมาแทน JSON
+ *
+ * วิธีที่ 2 JSONP ผ่านแท็ก script
+ *   ใช้เมื่อวิธีแรกไม่ผ่าน เช่นเบราว์เซอร์เก่าที่ไม่มี fetch
+ *   ข้อเสียคือแท็ก script แนบคุกกี้เสมอ เลี่ยงปัญหาบัญชีไม่ได้
+ */
+function callApi(params, onDone, onFail, timeoutMs){
+  var ms = timeoutMs || 15000;
+  var url = APP_URL + '?' + params + '&_=' + Date.now();
+
+  if(!window.fetch){ jsonp(params, onDone, onFail, ms); return; }
+
+  var ctl = (typeof AbortController !== 'undefined') ? new AbortController() : null;
+  var timer = setTimeout(function(){ if(ctl) ctl.abort(); }, ms);
+  var opt = { method:'GET', credentials:'omit', mode:'cors', redirect:'follow', cache:'no-store' };
+  if(ctl) opt.signal = ctl.signal;
+
+  fetch(url, opt)
+    .then(function(r){
+      if(!r.ok) throw new Error('HTTP ' + r.status);
+      return r.text();
+    })
+    .then(function(txt){
+      clearTimeout(timer);
+      var data;
+      try{ data = JSON.parse(txt); }
+      catch(e){ throw new Error('รูปแบบข้อมูลไม่ถูกต้อง'); }
+      onDone(data);
+    })
+    .catch(function(){
+      clearTimeout(timer);
+      /* เผื่อเซิร์ฟเวอร์ไม่ส่งหัว CORS มา ให้ลองวิธีเดิมอีกชั้นหนึ่ง */
+      jsonp(params, onDone, onFail, ms);
+    });
+}
+
 function setSyncBusy(on){
   var b = $('btnSync');
   if(!b) return;
@@ -911,7 +953,7 @@ function setSyncBusy(on){
 
 function loadData(manual){
   setSyncBusy(true);
-  jsonp('publicData=1', function(d){
+  callApi('publicData=1', function(d){
     setSyncBusy(false);
     if(!d || !d.ok){
       showError(d && d.error ? d.error : 'ระบบไม่ได้ส่งข้อมูลกลับมา');
@@ -964,8 +1006,10 @@ function showError(msg){
   $('errBox').style.display = 'block';
   $('errBox').innerHTML =
     '<div class="err"><b>ยังแสดงข้อมูลภาพรวมไม่ได้</b><br>'+esc(msg)+
-    '<br><br>สาเหตุที่พบบ่อยคือระบบยังไม่ได้เปิดการเผยแพร่ข้อมูล หรือที่อยู่ของระบบเปลี่ยนไปหลัง Deploy ใหม่ '+
-    'ท่านยังเข้าใช้งานระบบได้ตามปกติผ่านปุ่มเข้าสู่ระบบ</div>';
+    '<br><br>หากใช้ Chrome ที่ลงชื่อเข้าใช้ Google ไว้หลายบัญชี ลองเปิดหน้านี้ในหน้าต่างไม่ระบุตัวตน '+
+    'หรือสลับบัญชีหลักเป็น @msu.ac.th แล้วรีเฟรชอีกครั้ง<br>'+
+    'ไม่ว่ากรณีใด ท่านยังกด<b>เข้าสู่ระบบ</b>เพื่อใช้งานได้ตามปกติ '+
+    '<a href="'+esc(APP_URL)+'" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline">เปิดระบบโดยตรง</a></div>';
   if(firstLoadDone) return;                        /* เคยโหลดสำเร็จแล้ว คงตัวเลขเดิมไว้ ดีกว่าล้างเป็นขีด */
   $('asOf').textContent = 'ไม่สามารถเชื่อมต่อได้';
   ['nTotal','nToday','nPending','nWeek'].forEach(function(id){ $(id).textContent = '—'; });
@@ -1292,7 +1336,7 @@ $('rateSend').addEventListener('click', function(){
   $('rateMsg').textContent = '';
 
   var note = encodeURIComponent($('rateNote').value.trim().substring(0,300));
-  jsonp('feedback=1&score=' + myScore + '&comment=' + note, function(r){
+  callApi('feedback=1&score=' + myScore + '&comment=' + note, function(r){
     if(r && r.ok){
       rateSent = true;
       btn.textContent = 'ส่งแล้ว ขอบคุณครับ';

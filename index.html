@@ -296,6 +296,32 @@ section{scroll-margin-top:90px}
   padding:11px 22px;font-family:'Mitr';font-weight:500;font-size:14px;transition:all .18s var(--ease)}
 .notice a.notice-go:hover{transform:translateY(-2px)}
 
+/* ---------- กล่องรายละเอียดรายวัน ---------- */
+.dd-card{max-width:440px;padding-top:22px}
+.dd-head{display:flex;align-items:flex-start;gap:12px;padding-right:30px;margin-bottom:14px}
+.dd-head b{display:block;font-family:'Mitr';font-weight:500;font-size:18px;line-height:1.35}
+.dd-head small{display:block;font-size:12.6px;color:var(--text2);margin-top:2px}
+.dd-total{margin-left:auto;font-family:'Mitr';font-weight:600;font-size:26px;color:var(--pu1);line-height:1;white-space:nowrap}
+.dd-total small{font-family:'Sarabun';font-weight:400;font-size:12.5px;color:var(--text2)}
+.dd-sum{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.dd-sum>div{border-radius:14px;padding:11px;text-align:center}
+.dd-sum span{display:block;font-family:'Mitr';font-weight:600;font-size:21px;line-height:1.25}
+.dd-sum small{font-size:12.2px}
+.dd-a{background:var(--gr-soft)}.dd-a span{color:#12855A}.dd-a small{color:#12855A}
+.dd-p{background:var(--pu-soft)}.dd-p span{color:#5B44C9}.dd-p small{color:#5B44C9}
+.dd-sec{margin-bottom:15px}
+.dd-sec h4{margin:0 0 8px;font-family:'Mitr';font-weight:500;font-size:13.8px;color:var(--text2)}
+.dd-row{display:flex;align-items:center;gap:9px;margin-bottom:7px;font-size:13px}
+.dd-k{flex:0 0 36%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dd-bar{flex:1;height:8px;border-radius:99px;background:var(--soft);overflow:hidden}
+.dd-bar i{display:block;height:100%;border-radius:99px}
+.dd-bar i.t-pk{background:linear-gradient(90deg,var(--pk1),var(--pk2))}
+.dd-bar i.t-bl{background:linear-gradient(90deg,var(--bl1),var(--bl2))}
+.dd-bar i.t-tl{background:linear-gradient(90deg,var(--tl1),var(--tl2))}
+.dd-v{font-family:'Mitr';font-weight:500;min-width:22px;text-align:right}
+.dd-note{margin:4px 0 0;font-size:12.2px;color:var(--muted);line-height:1.8}
+@media(max-width:420px){.dd-k{flex-basis:44%}}
+
 /* ---------- สรุปตามสายงาน ---------- */
 .grp-wrap{display:flex;flex-direction:column;gap:12px;margin-top:6px}
 .grp{background:var(--soft);border-radius:16px;padding:13px 15px}
@@ -641,8 +667,8 @@ footer{border-top:1px solid var(--border);background:var(--surface);margin-top:4
         หน้าหลัก
       </a>
       <a href="#overview">ภาพรวม</a>
-      <a href="#calendar">ปฏิทิน</a>
       <a href="#week">สรุปสัปดาห์นี้</a>
+      <a href="#calendar">ปฏิทิน</a>
       <a href="#holidays">วันหยุดราชการ</a>
       <a href="#apply">ยื่นใบลา</a>
       <a href="#kpi">ตัวชี้วัด</a>
@@ -715,6 +741,16 @@ footer{border-top:1px solid var(--border);background:var(--surface);margin-top:4
   </div>
 </div>
 
+<!-- รายละเอียดผู้ลารายวัน เปิดเมื่อคลิกวันในปฏิทิน -->
+<div class="gate" id="dayDlg" hidden>
+  <div class="gate-card dd-card" role="dialog" aria-modal="true">
+    <button type="button" class="gate-x" id="ddClose" aria-label="ปิด">
+      <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+    <div id="ddBody"></div>
+  </div>
+</div>
+
 <main class="wrap">
 
   <div id="errBox" style="display:none"></div>
@@ -745,6 +781,29 @@ footer{border-top:1px solid var(--border);background:var(--surface);margin-top:4
         <div class="st-label">สัปดาห์นี้</div>
         <div class="st-num" id="nWeek"><div class="sk sk-num"></div></div>
         <div class="st-foot" id="fWeek"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- สรุปสัปดาห์ + ผู้ลาวันนี้ -->
+  <section id="week">
+    <div class="sec-head">
+      <span class="sec-ic g-pu"><svg viewBox="0 0 24 24"><path d="M3 17l5-6 4 4 5-7 4 5"/></svg></span>
+      <h2>สรุปการลาสัปดาห์นี้</h2>
+    </div>
+    <div class="grid c2">
+      <div class="card">
+        <div class="card-title">แยกตามประเภทการลา</div>
+        <p class="card-sub" id="weekRange">กำลังโหลดข้อมูล…</p>
+        <div class="tbar" id="weekTypes">
+          <div class="sk sk-line" style="width:100%"></div>
+          <div class="sk sk-line" style="width:70%"></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">บุคลากรที่ลาวันนี้</div>
+        <p class="card-sub" id="todaySub">กำลังโหลดข้อมูล…</p>
+        <div class="list" id="todayList"></div>
       </div>
     </div>
   </section>
@@ -806,29 +865,6 @@ footer{border-top:1px solid var(--border);background:var(--surface);margin-top:4
       </div>
       <div class="cal-grid" id="calGrid"></div>
       <p class="cal-foot" id="calFoot">เลือกวันเพื่อดูรายละเอียด</p>
-    </div>
-  </section>
-
-  <!-- สรุปสัปดาห์ + ผู้ลาวันนี้ -->
-  <section id="week">
-    <div class="sec-head">
-      <span class="sec-ic g-pu"><svg viewBox="0 0 24 24"><path d="M3 17l5-6 4 4 5-7 4 5"/></svg></span>
-      <h2>สรุปการลาสัปดาห์นี้</h2>
-    </div>
-    <div class="grid c2">
-      <div class="card">
-        <div class="card-title">แยกตามประเภทการลา</div>
-        <p class="card-sub" id="weekRange">กำลังโหลดข้อมูล…</p>
-        <div class="tbar" id="weekTypes">
-          <div class="sk sk-line" style="width:100%"></div>
-          <div class="sk sk-line" style="width:70%"></div>
-        </div>
-      </div>
-      <div class="card">
-        <div class="card-title">บุคลากรที่ลาวันนี้</div>
-        <p class="card-sub" id="todaySub">กำลังโหลดข้อมูล…</p>
-        <div class="list" id="todayList"></div>
-      </div>
     </div>
   </section>
 
@@ -1334,6 +1370,7 @@ var CAL = { data:{}, y:0, m:0, today:'', sel:'' };
 
 function initCalendar(d){
   CAL.data = d.calendar || {};
+  CAL.holiday = d.holidayMap || {};
   CAL.today = d.today || '';
   if(!CAL.y){
     var p = String(CAL.today).split('-');
@@ -1397,14 +1434,63 @@ function drawCalendar(){
     el.addEventListener('click', function(){
       CAL.sel = el.getAttribute('data-k');
       drawCalendar();
-      var c = CAL.data[CAL.sel] || { a:0, p:0 };
-      $('calFoot').innerHTML =
-        '<b>'+esc(thDate(CAL.sel))+'</b> — อนุมัติแล้ว <b>'+num(c.a)+' คน</b>'+
-        (c.p ? ' • รออนุมัติ <b>'+num(c.p)+' คน</b>' : '') +
-        ' <span style="color:var(--muted)">(หน้าสาธารณะแสดงเฉพาะจำนวน ไม่แสดงรายชื่อ)</span>';
+      openDay(CAL.sel);
     });
   });
 }
+
+/**
+ * รายละเอียดของวันที่เลือก
+ * หน้าสาธารณะแสดงเฉพาะจำนวน ไม่มีชื่อบุคคล จึงแยกให้ดูตามประเภทการลา
+ * สายงาน และหน่วยงาน ซึ่งเพียงพอต่อการดูภาพรวมโดยไม่กระทบข้อมูลส่วนบุคคล
+ */
+function openDay(key){
+  var c = CAL.data[key];
+  if(!c) return;
+  var total = (c.a||0) + (c.p||0);
+  var hol = (CAL.holiday && CAL.holiday[key]) ? CAL.holiday[key] : '';
+  var dow = ['อาทิตย์','จันทร์','อังคาร','พุธ','พฤหัสบดี','ศุกร์','เสาร์'][parseYmd(key).getDay()];
+
+  var bars = function(obj, tone){
+    var keys = Object.keys(obj || {});
+    if(!keys.length) return '';
+    keys.sort(function(a,b){ return obj[b]-obj[a]; });
+    var max = obj[keys[0]] || 1;
+    return keys.map(function(k){
+      var pct = Math.max(6, Math.round(obj[k]/max*100));
+      return '<div class="dd-row">'+
+        '<span class="dd-k">'+esc(k)+'</span>'+
+        '<span class="dd-bar"><i class="'+tone+'" style="width:'+pct+'%"></i></span>'+
+        '<span class="dd-v">'+num(obj[k])+'</span></div>';
+    }).join('');
+  };
+
+  var h =
+    '<div class="dd-head">'+
+      '<div><b>'+esc(thDate(key))+'</b><small>วัน'+esc(dow)+
+        (hol ? ' • วันหยุด: '+esc(hol) : '')+'</small></div>'+
+      '<span class="dd-total">'+num(total)+' <small>คน</small></span>'+
+    '</div>'+
+    '<div class="dd-sum">'+
+      '<div class="dd-a"><span>'+num(c.a||0)+'</span><small>อนุมัติแล้ว</small></div>'+
+      '<div class="dd-p"><span>'+num(c.p||0)+'</span><small>รออนุมัติ</small></div>'+
+    '</div>';
+
+  if(c.t && Object.keys(c.t).length)
+    h += '<div class="dd-sec"><h4>แยกตามประเภทการลา</h4>'+bars(c.t,'t-pk')+'</div>';
+  if(c.g && Object.keys(c.g).length)
+    h += '<div class="dd-sec"><h4>แยกตามสายงาน</h4>'+bars(c.g,'t-bl')+'</div>';
+  if(c.d && Object.keys(c.d).length)
+    h += '<div class="dd-sec"><h4>แยกตามหน่วยงาน</h4>'+bars(c.d,'t-tl')+'</div>';
+
+  h += '<p class="dd-note">หน้าสาธารณะแสดงเฉพาะจำนวน ไม่แสดงรายชื่อผู้ลา '+
+       'ผู้มีสิทธิ์ดูรายละเอียดรายบุคคลกรุณาเข้าสู่ระบบ</p>';
+
+  $('ddBody').innerHTML = h;
+  $('dayDlg').hidden = false;
+}
+
+function closeDay(){ if($('dayDlg')) $('dayDlg').hidden = true; }
 
 $('calPrev').addEventListener('click', function(){ shiftMonth(-1); });
 $('calNext').addEventListener('click', function(){ shiftMonth(1); });
@@ -1726,6 +1812,14 @@ function initGate(){
   });
 
   $('gateClose').addEventListener('click',close);
+
+  /* กล่องรายละเอียดรายวัน ปิดด้วยปุ่ม กดพื้นหลัง หรือ Esc เหมือนกัน */
+  var dd=$('dayDlg');
+  if(dd){
+    $('ddClose').addEventListener('click',closeDay);
+    dd.addEventListener('click',function(e){ if(e.target===dd) closeDay(); });
+    document.addEventListener('keydown',function(e){ if(e.key==='Escape') closeDay(); });
+  }
   g.addEventListener('click',function(e){ if(e.target===g) close(); });
   document.addEventListener('keydown',function(e){ if(e.key==='Escape' && !g.hidden) close(); });
 }

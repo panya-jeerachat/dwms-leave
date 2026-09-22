@@ -229,6 +229,50 @@ section{scroll-margin-top:90px}
 
 .empty{text-align:center;color:var(--muted);font-size:13.5px;padding:30px 10px}
 
+/* ---------- กล่องต้อนรับ ---------- */
+.gate{position:fixed;inset:0;z-index:90;display:flex;align-items:center;justify-content:center;
+  padding:22px;background:rgba(20,20,23,.55);backdrop-filter:blur(6px);animation:gateIn .2s ease}
+.gate[hidden]{display:none}
+@keyframes gateIn{from{opacity:0}to{opacity:1}}
+.gate-card{background:var(--surface);border:1px solid var(--border);border-radius:24px;
+  padding:30px 30px 24px;max-width:470px;width:100%;text-align:center;
+  box-shadow:0 26px 60px rgba(0,0,0,.28);animation:gateUp .26s var(--ease)}
+@keyframes gateUp{from{opacity:0;transform:translateY(16px) scale(.97)}to{opacity:1;transform:none}}
+.gate-ic{width:56px;height:56px;border-radius:18px;margin:0 auto 16px;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,var(--pu1),var(--bl1));box-shadow:0 10px 24px rgba(116,92,233,.32)}
+.gate-ic svg{width:27px;height:27px;stroke:#fff;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.gate-card h2{font-family:'Mitr';font-weight:500;font-size:20px;margin:0 0 10px;line-height:1.4}
+.gate-card p{margin:0 0 16px;font-size:14.5px;color:var(--text2);line-height:1.8}
+.gate-tip{background:var(--o-soft);color:#A65A05;border-radius:15px;padding:13px 16px;
+  font-size:13.2px;line-height:1.8;text-align:left;margin-bottom:20px}
+.gate-btns{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.gate-go{flex:1;min-width:190px;display:inline-flex;align-items:center;justify-content:center;gap:9px;
+  text-decoration:none;background:linear-gradient(135deg,var(--pu1),var(--bl1));color:#fff;
+  border-radius:999px;padding:13px 26px;font-family:'Mitr';font-weight:500;font-size:15px;
+  box-shadow:0 10px 24px rgba(116,92,233,.3);transition:all .18s var(--ease)}
+.gate-go:hover{transform:translateY(-3px)}
+.gate-go svg{width:18px;height:18px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.gate-skip{border:1px solid var(--border);background:var(--surface);color:var(--text2);
+  border-radius:999px;padding:13px 24px;cursor:pointer;font-family:'Sarabun';font-size:14.5px;
+  font-weight:600;transition:all .18s var(--ease)}
+.gate-skip:hover{border-color:var(--text2);color:var(--text)}
+.gate-chk{display:inline-flex;align-items:center;gap:8px;margin-top:16px;
+  font-size:12.8px;color:var(--muted);cursor:pointer}
+.gate-chk input{width:15px;height:15px;accent-color:#745CE9}
+
+/* แจ้งสถานะแบบเรียบ ๆ ไม่ใช่กล่องแดงเตือนภัย */
+.notice{background:var(--soft);border:1px solid var(--border);border-radius:18px;
+  padding:18px 22px;display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.notice-ic{width:40px;height:40px;border-radius:13px;flex:0 0 auto;display:flex;align-items:center;justify-content:center;
+  background:var(--bl-soft)}
+.notice-ic svg{width:19px;height:19px;stroke:#2A61BD;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.notice-txt{flex:1;min-width:210px;font-size:13.8px;color:var(--text2);line-height:1.75}
+.notice-txt b{color:var(--text);font-family:'Mitr';font-weight:500}
+.notice a.notice-go{display:inline-flex;align-items:center;gap:8px;text-decoration:none;white-space:nowrap;
+  background:linear-gradient(135deg,var(--pu1),var(--bl1));color:#fff;border-radius:999px;
+  padding:11px 22px;font-family:'Mitr';font-weight:500;font-size:14px;transition:all .18s var(--ease)}
+.notice a.notice-go:hover{transform:translateY(-2px)}
+
 /* ---------- สรุปตามสายงาน ---------- */
 .grp-wrap{display:flex;flex-direction:column;gap:12px;margin-top:6px}
 .grp{background:var(--soft);border-radius:16px;padding:13px 15px}
@@ -606,6 +650,31 @@ footer{border-top:1px solid var(--border);background:var(--surface);margin-top:4
     <span class="pill pill-quiet" id="pillNext">รีเฟรชอัตโนมัติทุก 5 นาที</span>
   </div>
 </header>
+
+<!-- กล่องต้อนรับ แจ้งวิธีเข้าดูข้อมูลให้ถูกบัญชีตั้งแต่แรก -->
+<div class="gate" id="gate" hidden>
+  <div class="gate-card" role="dialog" aria-modal="true" aria-labelledby="gateTitle">
+    <span class="gate-ic">
+      <svg viewBox="0 0 24 24"><path d="M4 6.5h16v11H4z"/><path d="M4 7l8 6 8-6"/></svg>
+    </span>
+    <h2 id="gateTitle">ลงชื่อเข้าใช้ด้วยอีเมล @msu.ac.th</h2>
+    <p>ข้อมูลภาพรวมในหน้านี้ดึงสดจากระบบของมหาวิทยาลัย
+       จึงต้องเปิดด้วยบัญชี Google ของหน่วยงาน</p>
+    <div class="gate-tip">
+      หากใช้ Chrome ที่ลงชื่อเข้าใช้ Google ไว้หลายบัญชี
+      โปรดตั้งบัญชี <b>@msu.ac.th</b> เป็นบัญชีหลัก
+      หรือเปิดหน้านี้ในหน้าต่างที่ลงชื่อด้วยบัญชีดังกล่าว
+    </div>
+    <div class="gate-btns">
+      <a class="gate-go" id="gateGo" href="#" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3"/></svg>
+        ลงชื่อเข้าใช้ระบบ
+      </a>
+      <button type="button" class="gate-skip" id="gateSkip">ดูภาพรวมต่อ</button>
+    </div>
+    <label class="gate-chk"><input type="checkbox" id="gateNever"> ไม่ต้องแสดงข้อความนี้อีก</label>
+  </div>
+</div>
 
 <main class="wrap">
 
@@ -1023,23 +1092,31 @@ document.addEventListener('visibilitychange', function(){
   if(document.visibilityState === 'visible' && Date.now() > nextAt) loadData(false);
 });
 
+/**
+ * ดึงข้อมูลไม่ได้ ส่วนใหญ่เกิดจากบัญชี Google ที่เปิดหน้านี้ไม่ใช่ของหน่วยงาน
+ * จึงแจ้งแบบเรียบ ๆ พร้อมทางไปต่อ ไม่ใช้กล่องเตือนสีแดงที่ทำให้ตกใจ
+ * เพราะไม่ใช่ความผิดพลาดของระบบและผู้ใช้ยังเข้าใช้งานได้ตามปกติ
+ */
 function showError(msg){
   $('errBox').style.display = 'block';
   $('errBox').innerHTML =
-    '<div class="err"><b>ยังแสดงข้อมูลภาพรวมไม่ได้</b><br>'+esc(msg)+
-    '<br><br>หากใช้ Chrome ที่ลงชื่อเข้าใช้ Google ไว้หลายบัญชี ลองเปิดหน้านี้ในหน้าต่างไม่ระบุตัวตน '+
-    'หรือสลับบัญชีหลักเป็น @msu.ac.th แล้วรีเฟรชอีกครั้ง<br>'+
-    'ไม่ว่ากรณีใด ท่านยังกด<b>เข้าสู่ระบบ</b>เพื่อใช้งานได้ตามปกติ '+
-    '<a href="'+esc(APP_URL)+'" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline">เปิดระบบโดยตรง</a></div>';
-  if(firstLoadDone) return;                        /* เคยโหลดสำเร็จแล้ว คงตัวเลขเดิมไว้ ดีกว่าล้างเป็นขีด */
-  $('asOf').textContent = 'ไม่สามารถเชื่อมต่อได้';
+    '<div class="notice">'+
+      '<span class="notice-ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg></span>'+
+      '<span class="notice-txt"><b>ยังไม่ได้ลงชื่อเข้าใช้ด้วยบัญชีของหน่วยงาน</b><br>'+
+      'ข้อมูลภาพรวมจะแสดงเมื่อเปิดหน้านี้ด้วยบัญชี @msu.ac.th '+
+      'หากลงชื่อเข้าใช้ Google ไว้หลายบัญชี โปรดตั้ง @msu.ac.th เป็นบัญชีหลักแล้วรีเฟรช</span>'+
+      '<a class="notice-go" href="'+esc(APP_URL)+'" target="_blank" rel="noopener">'+
+      '<svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3"/></svg>'+
+      'ลงชื่อเข้าใช้</a>'+
+    '</div>';
+
+  if(firstLoadDone) return;   /* เคยโหลดสำเร็จแล้ว คงตัวเลขเดิมไว้ */
+  $('asOf').textContent = 'รอลงชื่อเข้าใช้';
   ['nTotal','nToday','nPending','nWeek'].forEach(function(id){ $(id).textContent = '—'; });
-  $('weekRange').textContent = 'ไม่มีข้อมูล';
-  $('weekTypes').innerHTML = '<div class="empty">ไม่มีข้อมูล</div>';
-  $('todaySub').textContent = '';
-  $('todayList').innerHTML = '<div class="empty">ไม่มีข้อมูล</div>';
-  $('trendBars').innerHTML = '<div class="empty">ไม่มีข้อมูล</div>';
-  $('holidayList').innerHTML = '<div class="empty">ไม่มีข้อมูล</div>';
+  ['weekRange','todaySub'].forEach(function(id){ $(id).textContent = ''; });
+  ['weekTypes','todayList','trendBars','holidayList','kpiStatus','kpiCards'].forEach(function(id){
+    if($(id)) $(id).innerHTML = '<div class="empty">ลงชื่อเข้าใช้ด้วยบัญชี @msu.ac.th เพื่อดูข้อมูลส่วนนี้</div>';
+  });
 }
 
 function render(d){
@@ -1330,7 +1407,7 @@ function groupRows(d){
 
 /* ---- ตั้งที่อยู่ระบบให้ทุกปุ่ม ---- */
 function applyAppUrl(){
-  ['loginTop','ctaApply'].forEach(function(id){
+  ['loginTop','ctaApply','gateGo'].forEach(function(id){
     var el = $(id);
     if(el){ el.href = APP_URL; el.target = '_blank'; el.rel = 'noopener'; }
   });
@@ -1541,6 +1618,29 @@ function runFind(){
   box.innerHTML=h;
 }
 
+/* ===================================================================
+   กล่องต้อนรับ — แนะนำให้ลงชื่อเข้าใช้ด้วยบัญชีหน่วยงานตั้งแต่เปิดหน้า
+   ช่วยตัดปัญหาเปิดมาแล้วเจอข้อมูลว่างโดยไม่รู้สาเหตุ
+   =================================================================== */
+var GATE_KEY='enmsu-gate-hide';
+
+function initGate(){
+  var g=$('gate');
+  if(!g) return;
+  var hide=false;
+  try{ hide = localStorage.getItem(GATE_KEY)==='1'; }catch(e){}
+  if(!hide) g.hidden=false;
+
+  var close=function(){
+    try{ if($('gateNever').checked) localStorage.setItem(GATE_KEY,'1'); }catch(e){}
+    g.hidden=true;
+  };
+  $('gateSkip').addEventListener('click',close);
+  $('gateGo').addEventListener('click',function(){ setTimeout(close,80); });
+  g.addEventListener('click',function(e){ if(e.target===g) close(); });
+  document.addEventListener('keydown',function(e){ if(e.key==='Escape' && !g.hidden) close(); });
+}
+
 /* ---- ปุ่มซิงก์ + เมนูบนมือถือ ---- */
 $('btnSync').addEventListener('click', function(){ loadData(true); });
 
@@ -1555,6 +1655,7 @@ applyAppUrl();
 paintStars(0);
 initTheme();
 initCalFind();
+initGate();
 loadData();
 </script>
 </body>

@@ -229,36 +229,59 @@ section{scroll-margin-top:90px}
 
 .empty{text-align:center;color:var(--muted);font-size:13.5px;padding:30px 10px}
 
-/* ---------- กล่องต้อนรับ ---------- */
+/* ---------- ปุ่มเข้าสู่ระบบแบบมีตัวเลือก ---------- */
+.login-split{display:inline-flex;align-items:stretch}
+.login-split .btn-login{border-radius:999px 0 0 999px;padding-right:16px!important}
+.btn-login-more{
+  border:0;cursor:pointer;border-radius:0 999px 999px 0;padding:0 12px;
+  background:linear-gradient(135deg,var(--pu1),var(--bl1));
+  box-shadow:0 8px 20px rgba(116,92,233,.3);
+  border-left:1px solid rgba(255,255,255,.28);transition:all .18s var(--ease);
+}
+.btn-login-more svg{width:16px;height:16px;stroke:#fff;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;display:block}
+.login-split:hover .btn-login,.login-split:hover .btn-login-more{transform:translateY(-3px)}
+.btn-login-more:active{transform:scale(.96)}
+
+/* ---------- กล่องเลือกวิธีเข้าสู่ระบบ ---------- */
 .gate{position:fixed;inset:0;z-index:90;display:flex;align-items:center;justify-content:center;
   padding:22px;background:rgba(20,20,23,.55);backdrop-filter:blur(6px);animation:gateIn .2s ease}
 .gate[hidden]{display:none}
 @keyframes gateIn{from{opacity:0}to{opacity:1}}
-.gate-card{background:var(--surface);border:1px solid var(--border);border-radius:24px;
-  padding:30px 30px 24px;max-width:470px;width:100%;text-align:center;
-  box-shadow:0 26px 60px rgba(0,0,0,.28);animation:gateUp .26s var(--ease)}
+.gate-card{position:relative;background:var(--surface);border:1px solid var(--border);border-radius:24px;
+  padding:26px 26px 22px;max-width:480px;width:100%;
+  box-shadow:0 26px 60px rgba(0,0,0,.3);animation:gateUp .26s var(--ease)}
 @keyframes gateUp{from{opacity:0;transform:translateY(16px) scale(.97)}to{opacity:1;transform:none}}
-.gate-ic{width:56px;height:56px;border-radius:18px;margin:0 auto 16px;display:flex;align-items:center;justify-content:center;
-  background:linear-gradient(135deg,var(--pu1),var(--bl1));box-shadow:0 10px 24px rgba(116,92,233,.32)}
-.gate-ic svg{width:27px;height:27px;stroke:#fff;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-.gate-card h2{font-family:'Mitr';font-weight:500;font-size:20px;margin:0 0 10px;line-height:1.4}
-.gate-card p{margin:0 0 16px;font-size:14.5px;color:var(--text2);line-height:1.8}
-.gate-tip{background:var(--o-soft);color:#A65A05;border-radius:15px;padding:13px 16px;
-  font-size:13.2px;line-height:1.8;text-align:left;margin-bottom:20px}
-.gate-btns{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
-.gate-go{flex:1;min-width:190px;display:inline-flex;align-items:center;justify-content:center;gap:9px;
-  text-decoration:none;background:linear-gradient(135deg,var(--pu1),var(--bl1));color:#fff;
-  border-radius:999px;padding:13px 26px;font-family:'Mitr';font-weight:500;font-size:15px;
-  box-shadow:0 10px 24px rgba(116,92,233,.3);transition:all .18s var(--ease)}
-.gate-go:hover{transform:translateY(-3px)}
-.gate-go svg{width:18px;height:18px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.gate-skip{border:1px solid var(--border);background:var(--surface);color:var(--text2);
-  border-radius:999px;padding:13px 24px;cursor:pointer;font-family:'Sarabun';font-size:14.5px;
-  font-weight:600;transition:all .18s var(--ease)}
-.gate-skip:hover{border-color:var(--text2);color:var(--text)}
-.gate-chk{display:inline-flex;align-items:center;gap:8px;margin-top:16px;
-  font-size:12.8px;color:var(--muted);cursor:pointer}
-.gate-chk input{width:15px;height:15px;accent-color:#745CE9}
+.gate-x{position:absolute;top:16px;right:16px;border:0;background:transparent;cursor:pointer;
+  padding:6px;border-radius:10px;transition:background .16s}
+.gate-x:hover{background:var(--soft)}
+.gate-x svg{width:19px;height:19px;stroke:var(--muted);fill:none;stroke-width:2;stroke-linecap:round;display:block}
+.gate-card h2{display:flex;align-items:center;gap:11px;font-family:'Mitr';font-weight:500;
+  font-size:19px;margin:0 0 8px;line-height:1.4;padding-right:32px}
+.gate-ic{width:38px;height:38px;border-radius:13px;flex:0 0 auto;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,var(--o1),var(--o2));box-shadow:0 8px 18px rgba(255,138,36,.3)}
+.gate-ic svg{width:19px;height:19px;stroke:#fff;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.gate-lead{margin:0 0 18px;font-size:13.8px;color:var(--text2);line-height:1.8}
+
+.gate-opt{
+  display:flex;gap:13px;align-items:flex-start;width:100%;text-align:left;cursor:pointer;
+  background:var(--surface);border:1.6px solid var(--border);border-radius:18px;
+  padding:14px 16px;margin-bottom:11px;transition:all .18s var(--ease);font-family:'Sarabun';
+}
+.gate-opt:hover{border-color:var(--pu1);background:var(--pu-soft);transform:translateY(-2px)}
+.gate-opt:active{transform:scale(.985)}
+.gate-opt.on{border-color:var(--pu1);background:var(--pu-soft)}
+.go-ic{width:40px;height:40px;border-radius:13px;flex:0 0 auto;display:flex;align-items:center;justify-content:center}
+.go-ic svg{width:20px;height:20px;stroke:#fff;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.go-ic-b{background:linear-gradient(135deg,var(--bl1),var(--bl2))}
+.go-ic-t{background:linear-gradient(135deg,var(--tl1),var(--tl2))}
+.go-txt{min-width:0}
+.go-txt b{display:block;font-family:'Mitr';font-weight:500;font-size:15px;color:var(--text);margin-bottom:3px}
+.go-txt small{display:block;font-size:12.6px;color:var(--text2);line-height:1.75}
+.gate-note{margin:14px 0 0;font-size:12.3px;color:var(--muted);line-height:1.8}
+@media(max-width:520px){
+  .gate-card{padding:22px 18px 18px}
+  .gate-opt{padding:13px 13px}
+}
 
 /* แจ้งสถานะแบบเรียบ ๆ ไม่ใช่กล่องแดงเตือนภัย */
 .notice{background:var(--soft);border:1px solid var(--border);border-radius:18px;
@@ -629,10 +652,15 @@ footer{border-top:1px solid var(--border);background:var(--surface);margin-top:4
         <svg class="ic-auto" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 3v18a9 9 0 0 0 0-18z" fill="currentColor" stroke="none"/></svg>
         <span id="themeTxt">ตามระบบ</span>
       </button>
-      <a class="btn-login" id="loginTop" href="#">
-        <svg viewBox="0 0 24 24"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3"/></svg>
-        เข้าสู่ระบบ
-      </a>
+      <span class="login-split">
+        <a class="btn-login" id="loginTop" href="#" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3"/></svg>
+          เข้าสู่ระบบ
+        </a>
+        <button type="button" class="btn-login-more" id="loginMode" title="เลือกวิธีเข้าสู่ระบบ" aria-label="เลือกวิธีเข้าสู่ระบบ">
+          <svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+      </span>
     </div>
   </div>
 </nav>
@@ -651,28 +679,39 @@ footer{border-top:1px solid var(--border);background:var(--surface);margin-top:4
   </div>
 </header>
 
-<!-- กล่องต้อนรับ แจ้งวิธีเข้าดูข้อมูลให้ถูกบัญชีตั้งแต่แรก -->
+<!-- กล่องเลือกวิธีเข้าสู่ระบบ เปิดเมื่อกดปุ่มเข้าสู่ระบบเท่านั้น -->
 <div class="gate" id="gate" hidden>
   <div class="gate-card" role="dialog" aria-modal="true" aria-labelledby="gateTitle">
-    <span class="gate-ic">
-      <svg viewBox="0 0 24 24"><path d="M4 6.5h16v11H4z"/><path d="M4 7l8 6 8-6"/></svg>
-    </span>
-    <h2 id="gateTitle">ลงชื่อเข้าใช้ด้วยอีเมล @msu.ac.th</h2>
-    <p>ข้อมูลภาพรวมในหน้านี้ดึงสดจากระบบของมหาวิทยาลัย
-       จึงต้องเปิดด้วยบัญชี Google ของหน่วยงาน</p>
-    <div class="gate-tip">
-      หากใช้ Chrome ที่ลงชื่อเข้าใช้ Google ไว้หลายบัญชี
-      โปรดตั้งบัญชี <b>@msu.ac.th</b> เป็นบัญชีหลัก
-      หรือเปิดหน้านี้ในหน้าต่างที่ลงชื่อด้วยบัญชีดังกล่าว
-    </div>
-    <div class="gate-btns">
-      <a class="gate-go" id="gateGo" href="#" target="_blank" rel="noopener">
-        <svg viewBox="0 0 24 24"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3"/></svg>
-        ลงชื่อเข้าใช้ระบบ
-      </a>
-      <button type="button" class="gate-skip" id="gateSkip">ดูภาพรวมต่อ</button>
-    </div>
-    <label class="gate-chk"><input type="checkbox" id="gateNever"> ไม่ต้องแสดงข้อความนี้อีก</label>
+    <button type="button" class="gate-x" id="gateClose" aria-label="ปิด">
+      <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+
+    <h2 id="gateTitle">
+      <span class="gate-ic"><svg viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="10" rx="2.5"/><path d="M8 10V7.5a4 4 0 0 1 8 0V10"/></svg></span>
+      เข้าสู่ระบบผู้ดูแล
+    </h2>
+    <p class="gate-lead">เลือกวิธีที่ใช้ได้กับเครื่องนี้ ระบบจะจำไว้ให้ ครั้งต่อไปกดปุ่มเดียวเข้าได้เลย</p>
+
+    <button type="button" class="gate-opt" data-mode="domain">
+      <span class="go-ic go-ic-b"><svg viewBox="0 0 24 24"><path d="M3 21h18M5 21V10l7-5 7 5v11M9.5 21v-5h5v5"/></svg></span>
+      <span class="go-txt">
+        <b>เข้าด้วยบัญชี @msu.ac.th</b>
+        <small>สำหรับเครื่องที่ลงชื่อเข้าใช้ Google ด้วยอีเมลมหาวิทยาลัยอยู่แล้ว
+          เช่น เครื่องที่ล็อกอิน msu.ac.th ไว้ — แนะนำสำหรับเจ้าหน้าที่ส่วนใหญ่</small>
+      </span>
+    </button>
+
+    <button type="button" class="gate-opt" data-mode="plain">
+      <span class="go-ic go-ic-t"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18 15 15 0 0 1 0-18z"/></svg></span>
+      <span class="go-txt">
+        <b>เข้าแบบไม่ผูกบัญชี Google</b>
+        <small>ใช้เมื่อวิธีแรกขึ้นหน้าขอสิทธิ์ หรือเครื่องนั้นลงชื่อ Google ไว้หลายบัญชี
+          ไม่ได้ลงชื่อ หรือใช้อีเมลอื่นที่ไม่ใช่ของมหาวิทยาลัย</small>
+      </span>
+    </button>
+
+    <p class="gate-note">ทั้งสองวิธีเข้าหน้าเดียวกันและยังต้องกรอกรหัสผู้ใช้กับรหัสผ่านของระบบเหมือนเดิม
+      ต่างกันแค่หน้าที่ Google เลือกบัญชีให้เท่านั้น ถ้ากดแล้วขึ้นข้อผิดพลาด ให้กลับมาเลือกอีกวิธีได้ทันที</p>
   </div>
 </div>
 
@@ -1407,12 +1446,13 @@ function groupRows(d){
 
 /* ---- ตั้งที่อยู่ระบบให้ทุกปุ่ม ---- */
 function applyAppUrl(){
-  ['loginTop','ctaApply','gateGo'].forEach(function(id){
+  var url = (typeof activeLoginUrl==='function') ? activeLoginUrl() : APP_URL;
+  ['loginTop','ctaApply'].forEach(function(id){
     var el = $(id);
-    if(el){ el.href = APP_URL; el.target = '_blank'; el.rel = 'noopener'; }
+    if(el){ el.href = url; el.target = '_blank'; el.rel = 'noopener'; }
   });
   var u = $('ctaUrl');
-  if(u) u.textContent = APP_URL;
+  if(u) u.textContent = url;
 }
 
 /* ---- ให้คะแนนความพึงพอใจ ---- */
@@ -1619,24 +1659,73 @@ function runFind(){
 }
 
 /* ===================================================================
-   กล่องต้อนรับ — แนะนำให้ลงชื่อเข้าใช้ด้วยบัญชีหน่วยงานตั้งแต่เปิดหน้า
-   ช่วยตัดปัญหาเปิดมาแล้วเจอข้อมูลว่างโดยไม่รู้สาเหตุ
+   วิธีเข้าสู่ระบบ
+   -----------------------------------------------------------------
+   สคริปต์อยู่ใต้ Google Workspace ของมหาวิทยาลัย จึงมีที่อยู่สองแบบ
+     domain : .../a/macros/msu.ac.th/s/<รหัส>/exec
+              บอก Google ให้ใช้บัญชีของโดเมนนี้ เหมาะกับเครื่องที่ล็อกอิน msu.ac.th อยู่
+     plain  : .../macros/s/<รหัส>/exec
+              ไม่ระบุโดเมน เหมาะกับเครื่องที่ลงชื่อหลายบัญชีหรือไม่ได้ลงชื่อ
+   เครื่องแต่ละเครื่องใช้ได้ไม่เหมือนกัน จึงให้ผู้ใช้เลือกเองแล้วจำไว้
    =================================================================== */
-var GATE_KEY='enmsu-gate-hide';
+var MODE_KEY='enmsu-login-mode';
+var ORG_DOMAIN='msu.ac.th';
+
+function execId(){
+  var m=String(APP_URL).match(/\/s\/([^/]+)\/exec/);
+  return m?m[1]:'';
+}
+function loginUrl(mode){
+  var id=execId();
+  if(!id) return APP_URL;
+  return (mode==='domain')
+    ? ('https://script.google.com/a/macros/'+ORG_DOMAIN+'/s/'+id+'/exec')
+    : ('https://script.google.com/macros/s/'+id+'/exec');
+}
+function savedMode(){
+  try{ var v=localStorage.getItem(MODE_KEY); return (v==='domain'||v==='plain')?v:''; }catch(e){ return ''; }
+}
+function setMode(m){
+  try{ localStorage.setItem(MODE_KEY,m); }catch(e){}
+  applyAppUrl();
+}
+
+/** ที่อยู่ที่ปุ่มเข้าสู่ระบบใช้จริง ยังไม่เคยเลือกก็ใช้ค่าตั้งต้นของระบบ */
+function activeLoginUrl(){
+  var m=savedMode();
+  return m ? loginUrl(m) : APP_URL;
+}
 
 function initGate(){
-  var g=$('gate');
-  if(!g) return;
-  var hide=false;
-  try{ hide = localStorage.getItem(GATE_KEY)==='1'; }catch(e){}
-  if(!hide) g.hidden=false;
+  var g=$('gate'); if(!g) return;
 
-  var close=function(){
-    try{ if($('gateNever').checked) localStorage.setItem(GATE_KEY,'1'); }catch(e){}
-    g.hidden=true;
+  var open=function(){
+    g.hidden=false;
+    var cur=savedMode();
+    Array.prototype.forEach.call(g.querySelectorAll('.gate-opt'),function(b){
+      b.classList.toggle('on', b.getAttribute('data-mode')===cur);
+    });
   };
-  $('gateSkip').addEventListener('click',close);
-  $('gateGo').addEventListener('click',function(){ setTimeout(close,80); });
+  var close=function(){ g.hidden=true; };
+
+  /* ลูกศรข้างปุ่มเข้าสู่ระบบ เปิดให้เลือกหรือเปลี่ยนวิธีได้ตลอด */
+  $('loginMode').addEventListener('click',function(e){ e.preventDefault(); open(); });
+
+  /* ยังไม่เคยเลือก กดปุ่มเข้าสู่ระบบครั้งแรกให้เลือกก่อน */
+  $('loginTop').addEventListener('click',function(e){
+    if(!savedMode()){ e.preventDefault(); open(); }
+  });
+
+  Array.prototype.forEach.call(g.querySelectorAll('.gate-opt'),function(btn){
+    btn.addEventListener('click',function(){
+      var m=btn.getAttribute('data-mode');
+      setMode(m);
+      close();
+      window.open(loginUrl(m),'_blank','noopener');
+    });
+  });
+
+  $('gateClose').addEventListener('click',close);
   g.addEventListener('click',function(e){ if(e.target===g) close(); });
   document.addEventListener('keydown',function(e){ if(e.key==='Escape' && !g.hidden) close(); });
 }

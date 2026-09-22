@@ -229,6 +229,27 @@ section{scroll-margin-top:90px}
 
 .empty{text-align:center;color:var(--muted);font-size:13.5px;padding:30px 10px}
 
+/* ---------- สรุปตามสายงาน ---------- */
+.grp-wrap{display:flex;flex-direction:column;gap:12px;margin-top:6px}
+.grp{background:var(--soft);border-radius:16px;padding:13px 15px}
+.grp-top{display:flex;align-items:baseline;gap:10px}
+.grp-top b{flex:1;font-family:'Mitr';font-weight:500;font-size:14.5px}
+.grp-n{font-family:'Mitr';font-weight:600;font-size:21px;line-height:1.2}
+.grp-n small{font-family:'Sarabun';font-weight:400;font-size:12.5px;color:var(--text2)}
+.grp-bar{height:9px;border-radius:99px;background:var(--surface);overflow:hidden;margin:9px 0 8px}
+.grp-bar>span{display:block;height:100%;border-radius:99px;transition:width .8s var(--ease)}
+.grp-foot{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;font-size:12.3px;color:var(--text2)}
+.grp-bl .grp-n{color:#2A61BD}
+.grp-bl .grp-bar>span{background:linear-gradient(90deg,var(--bl1),var(--bl2))}
+.grp-tl .grp-n{color:#118183}
+.grp-tl .grp-bar>span{background:linear-gradient(90deg,var(--tl1),var(--tl2))}
+.grp-pu .grp-n{color:#5B44C9}
+.grp-pu .grp-bar>span{background:linear-gradient(90deg,var(--pu1),var(--pu2))}
+.grp-note{margin:13px 0 0;font-size:12.2px;color:var(--muted);line-height:1.75}
+:root[data-theme="dark"] .grp-bl .grp-n{color:#8FC0FF}
+:root[data-theme="dark"] .grp-tl .grp-n{color:#6FE3DD}
+:root[data-theme="dark"] .grp-pu .grp-n{color:#B7A3FF}
+
 /* กล่องติดตามสถานะ */
 .track{background:linear-gradient(135deg,var(--pu-soft),var(--bl-soft));border:1px solid var(--border)}
 .track-form{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
@@ -1074,11 +1095,11 @@ function render(d){
     $('todaySub').textContent = 'วันนี้บุคลากรปฏิบัติงานครบทุกคน';
     $('todayList').innerHTML = '';
   }else if(!d.showNames){
-    $('todaySub').textContent = 'วันนี้มีผู้ลา '+num(d.todayCount)+' คน';
-    $('todayList').innerHTML =
-      '<div class="empty">หน่วยงานปิดการแสดงรายชื่อในหน้าสาธารณะไว้ '+
-      'เนื่องจากชื่อผู้ลาและประเภทการลาเป็นข้อมูลส่วนบุคคล<br>'+
-      'ผู้มีสิทธิ์ดูรายละเอียดกรุณาเข้าสู่ระบบ</div>';
+    /* ปิดการแสดงรายชื่อไว้ แต่ยังสรุปเป็นจำนวนแยกตามสายงานให้ผู้บริหารดูได้ */
+    $('todaySub').textContent = 'วันนี้มีผู้ลา '+num(d.todayCount)+' คน แยกตามสายงานดังนี้';
+    $('todayList').innerHTML = groupRows(d) +
+      '<p class="grp-note">หน่วยงานปิดการแสดงรายชื่อในหน้าสาธารณะไว้ '+
+      'เนื่องจากชื่อผู้ลาและประเภทการลาเป็นข้อมูลส่วนบุคคล ผู้มีสิทธิ์ดูรายละเอียดกรุณาเข้าสู่ระบบ</p>';
   }else{
     $('todaySub').textContent = 'วันนี้มีผู้ลา '+num(d.todayCount)+' คน';
     $('todayList').innerHTML = list.map(function(x){
@@ -1276,6 +1297,36 @@ $('calToday').addEventListener('click', function(){
   CAL.y = Number(p[0]); CAL.m = Number(p[1]); CAL.sel = '';
   drawCalendar();
 });
+
+/**
+ * สรุปจำนวนผู้ลาแยกตามสายงาน — สายวิชาการ และ สายสนับสนุน
+ * ใช้แสดงแทนรายชื่อเมื่อหน่วยงานปิดการเปิดเผยชื่อ
+ * แสดงทั้งจำนวนผู้ลาวันนี้ ผู้ลาสัปดาห์นี้ และสัดส่วนเทียบกับบุคลากรทั้งสาย
+ */
+function groupRows(d){
+  var groups = d.groups || ['สายวิชาการ','สายสนับสนุน'];
+  var today  = d.todayByGroup || {};
+  var week   = d.weekByGroup || {};
+  var total  = d.personnelByGroup || {};
+  var tone   = { 'สายวิชาการ':'bl', 'สายสนับสนุน':'tl' };
+
+  return '<div class="grp-wrap">'+groups.map(function(g){
+    var n = today[g]||0, w = week[g]||0, all = total[g]||0;
+    var pct = all ? Math.min(100, Math.round(n/all*100)) : 0;
+    var c = tone[g] || 'pu';
+    return '<div class="grp grp-'+c+'">'+
+      '<div class="grp-top">'+
+        '<b>'+esc(g)+'</b>'+
+        '<span class="grp-n">'+num(n)+' <small>คน</small></span>'+
+      '</div>'+
+      '<div class="grp-bar"><span style="width:'+Math.max(n?4:0,pct)+'%"></span></div>'+
+      '<div class="grp-foot">'+
+        '<span>บุคลากรทั้งสาย '+num(all)+' คน</span>'+
+        '<span>สัปดาห์นี้ลาแล้ว '+num(w)+' คน</span>'+
+      '</div>'+
+    '</div>';
+  }).join('')+'</div>';
+}
 
 /* ---- ตั้งที่อยู่ระบบให้ทุกปุ่ม ---- */
 function applyAppUrl(){

@@ -309,18 +309,25 @@ section{scroll-margin-top:90px}
 .dd-sum small{font-size:12.2px}
 .dd-a{background:var(--gr-soft)}.dd-a span{color:#12855A}.dd-a small{color:#12855A}
 .dd-p{background:var(--pu-soft)}.dd-p span{color:#5B44C9}.dd-p small{color:#5B44C9}
-.dd-sec{margin-bottom:15px}
-.dd-sec h4{margin:0 0 8px;font-family:'Mitr';font-weight:500;font-size:13.8px;color:var(--text2)}
-.dd-row{display:flex;align-items:center;gap:9px;margin-bottom:7px;font-size:13px}
-.dd-k{flex:0 0 36%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.dd-bar{flex:1;height:8px;border-radius:99px;background:var(--soft);overflow:hidden}
-.dd-bar i{display:block;height:100%;border-radius:99px}
-.dd-bar i.t-pk{background:linear-gradient(90deg,var(--pk1),var(--pk2))}
-.dd-bar i.t-bl{background:linear-gradient(90deg,var(--bl1),var(--bl2))}
-.dd-bar i.t-tl{background:linear-gradient(90deg,var(--tl1),var(--tl2))}
-.dd-v{font-family:'Mitr';font-weight:500;min-width:22px;text-align:right}
+.dd-sec{margin-bottom:16px}
+.dd-sec h4{margin:0 0 9px;font-family:'Mitr';font-weight:500;font-size:13.8px;color:var(--text2)}
+/* กรอบตัวเลข — อ่านค่าได้ทันทีโดยไม่ต้องเทียบความยาวแถบ */
+.dd-tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(104px,1fr));gap:9px}
+.dd-tile{border-radius:15px;padding:13px 10px;text-align:center;border:1px solid transparent}
+.dd-num{display:block;font-family:'Mitr';font-weight:600;font-size:25px;line-height:1.15}
+.dd-lb{display:block;font-size:12.4px;margin-top:3px;line-height:1.5;color:var(--text2)}
+.tn-pk{background:var(--pk-soft)} .tn-pk .dd-num{color:#C62A6B}
+.tn-pu{background:var(--pu-soft)} .tn-pu .dd-num{color:#5B44C9}
+.tn-tl{background:var(--tl-soft)} .tn-tl .dd-num{color:#118183}
+.tn-gr{background:var(--gr-soft)} .tn-gr .dd-num{color:#12855A}
+.tn-bl{background:var(--bl-soft)} .tn-bl .dd-num{color:#2A61BD}
 .dd-note{margin:4px 0 0;font-size:12.2px;color:var(--muted);line-height:1.8}
-@media(max-width:420px){.dd-k{flex-basis:44%}}
+:root[data-theme="dark"] .tn-pk .dd-num{color:#FF9DC0}
+:root[data-theme="dark"] .tn-pu .dd-num{color:#B7A3FF}
+:root[data-theme="dark"] .tn-tl .dd-num{color:#6FE3DD}
+:root[data-theme="dark"] .tn-gr .dd-num{color:#6FE0A5}
+:root[data-theme="dark"] .tn-bl .dd-num{color:#8FC0FF}
+@media(max-width:420px){.dd-tiles{grid-template-columns:repeat(2,1fr)}}
 
 /* ---------- สรุปตามสายงาน ---------- */
 .grp-wrap{display:flex;flex-direction:column;gap:12px;margin-top:6px}
@@ -1441,8 +1448,9 @@ function drawCalendar(){
 
 /**
  * รายละเอียดของวันที่เลือก
- * หน้าสาธารณะแสดงเฉพาะจำนวน ไม่มีชื่อบุคคล จึงแยกให้ดูตามประเภทการลา
- * สายงาน และหน่วยงาน ซึ่งเพียงพอต่อการดูภาพรวมโดยไม่กระทบข้อมูลส่วนบุคคล
+ * ใช้กรอบตัวเลขแทนแถบสัดส่วน เพราะจำนวนผู้ลาต่อวันมักเป็นเลขหลักเดียว
+ * แถบยาว ๆ จึงไม่ได้ช่วยให้เทียบง่ายขึ้น อ่านตัวเลขตรง ๆ ชัดกว่า
+ * หน้าสาธารณะแสดงเฉพาะจำนวน ไม่มีชื่อบุคคล
  */
 function openDay(key){
   var c = CAL.data[key];
@@ -1451,19 +1459,25 @@ function openDay(key){
   var hol = (CAL.holiday && CAL.holiday[key]) ? CAL.holiday[key] : '';
   var dow = ['อาทิตย์','จันทร์','อังคาร','พุธ','พฤหัสบดี','ศุกร์','เสาร์'][parseYmd(key).getDay()];
 
-  var bars = function(obj, tone){
+  var tiles = function(obj, toneFn){
     var keys = Object.keys(obj || {});
     if(!keys.length) return '';
     keys.sort(function(a,b){ return obj[b]-obj[a]; });
-    var max = obj[keys[0]] || 1;
-    return keys.map(function(k){
-      var pct = Math.max(6, Math.round(obj[k]/max*100));
-      return '<div class="dd-row">'+
-        '<span class="dd-k">'+esc(k)+'</span>'+
-        '<span class="dd-bar"><i class="'+tone+'" style="width:'+pct+'%"></i></span>'+
-        '<span class="dd-v">'+num(obj[k])+'</span></div>';
-    }).join('');
+    return '<div class="dd-tiles">'+keys.map(function(k){
+      return '<div class="dd-tile '+toneFn(k)+'">'+
+        '<span class="dd-num">'+num(obj[k])+'</span>'+
+        '<span class="dd-lb">'+esc(k)+'</span></div>';
+    }).join('')+'</div>';
   };
+
+  var typeTone = function(t){
+    if(t==='ลาป่วย') return 'tn-pk';
+    if(t==='ลากิจส่วนตัว') return 'tn-pu';
+    if(t==='ลาพักผ่อน') return 'tn-tl';
+    if(t==='ลาคลอดบุตร') return 'tn-gr';
+    return 'tn-bl';
+  };
+  var groupTone = function(g){ return (g==='สายวิชาการ') ? 'tn-bl' : 'tn-tl'; };
 
   var h =
     '<div class="dd-head">'+
@@ -1477,11 +1491,9 @@ function openDay(key){
     '</div>';
 
   if(c.t && Object.keys(c.t).length)
-    h += '<div class="dd-sec"><h4>แยกตามประเภทการลา</h4>'+bars(c.t,'t-pk')+'</div>';
+    h += '<div class="dd-sec"><h4>แยกตามประเภทการลา</h4>'+tiles(c.t,typeTone)+'</div>';
   if(c.g && Object.keys(c.g).length)
-    h += '<div class="dd-sec"><h4>แยกตามสายงาน</h4>'+bars(c.g,'t-bl')+'</div>';
-  if(c.d && Object.keys(c.d).length)
-    h += '<div class="dd-sec"><h4>แยกตามหน่วยงาน</h4>'+bars(c.d,'t-tl')+'</div>';
+    h += '<div class="dd-sec"><h4>แยกตามสายงาน</h4>'+tiles(c.g,groupTone)+'</div>';
 
   h += '<p class="dd-note">หน้าสาธารณะแสดงเฉพาะจำนวน ไม่แสดงรายชื่อผู้ลา '+
        'ผู้มีสิทธิ์ดูรายละเอียดรายบุคคลกรุณาเข้าสู่ระบบ</p>';

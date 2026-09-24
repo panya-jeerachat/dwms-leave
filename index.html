@@ -986,6 +986,19 @@ footer{border-top:1px solid var(--border);background:var(--surface);margin-top:4
    =================================================================== */
 var APP_URL = 'https://script.google.com/macros/s/AKfycbzn6b1edfqUSLRn-v320rQafQaY2Nycnjq72hCgaP42Q0mDZQGgvV8FC9LovAVso3fNpw/exec';
 
+/* ===================================================================
+   ที่อยู่ไฟล์ข้อมูลสาธารณะ (แนะนำให้ตั้ง)
+   -------------------------------------------------------------------
+   ระบบจะคำนวณสรุปไว้ล่วงหน้าแล้วเผยแพร่เป็นไฟล์ CSV นิ่งบน docs.google.com
+   ที่อยู่แบบนี้เปิดได้โดยไม่ผูกบัญชี Google จึงไม่มีปัญหากับเครื่องที่
+   ลงชื่อเข้าใช้หลายบัญชี และโหลดเร็วกว่าเพราะไม่ต้องรัน Apps Script
+
+   วิธีได้มา: เปิดไฟล์ Google Sheets ของระบบ → ไฟล์ → แชร์ → เผยแพร่ไปยังเว็บ
+   เลือกชีต PublicCache และรูปแบบ .csv แล้วคัดลอกที่อยู่มาวางที่นี่
+   เว้นว่างไว้ระบบจะถอยไปเรียก Apps Script แบบเดิมให้เอง
+   =================================================================== */
+var FEED_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS8tPj5k1O7nqocYhdp6pQa3xU9X2AUZw1d6dbDJbV_9hbiJJu4M8oxvdWnbQLls3Y6dh7KKdby7fG2/pub?gid=1119609623&single=true&output=csv';
+
 var $ = function(id){ return document.getElementById(id); };
 function esc(v){
   return String(v==null?'':v)
@@ -1085,6 +1098,38 @@ function jsonp(params, onDone, onFail, timeoutMs){
  *   ใช้เมื่อวิธีแรกไม่ผ่าน เช่นเบราว์เซอร์เก่าที่ไม่มี fetch
  *   ข้อเสียคือแท็ก script แนบคุกกี้เสมอ เลี่ยงปัญหาบัญชีไม่ได้
  */
+/**
+ * อ่านไฟล์ข้อมูลสาธารณะที่เผยแพร่ไว้
+ * ไฟล์เป็น CSV ที่มีข้อความ JSON อยู่ในช่องเดียว หรือหลายช่องถ้าข้อมูลยาว
+ * ต้องถอดเครื่องหมายคำพูดตามกติกาของ CSV ก่อนแปลงเป็นข้อมูลจริง
+ */
+function parseFeed(txt){
+  var t = String(txt||'').replace(/^\uFEFF/,'').replace(/\r/g,'').trim();
+  if(!t) throw new Error('ไฟล์ข้อมูลว่าง');
+  var json = t.split('\n').map(function(line){
+    var v = line.trim();
+    if(v.charAt(0)==='"'){
+      var end = v.lastIndexOf('"');
+      v = v.substring(1, end<1 ? v.length : end).replace(/""/g,'"');
+    }
+    return v;
+  }).join('');
+  return JSON.parse(json);
+}
+
+function loadFeed(onDone, onFail, timeoutMs){
+  var url = FEED_URL + (FEED_URL.indexOf('?')>=0?'&':'?') + '_=' + Date.now();
+  var ctl = (typeof AbortController !== 'undefined') ? new AbortController() : null;
+  var timer = setTimeout(function(){ if(ctl) ctl.abort(); }, timeoutMs || 12000);
+  var opt = { method:'GET', credentials:'omit', mode:'cors', redirect:'follow', cache:'no-store' };
+  if(ctl) opt.signal = ctl.signal;
+
+  fetch(url, opt)
+    .then(function(r){ if(!r.ok) throw new Error('HTTP '+r.status); return r.text(); })
+    .then(function(txt){ clearTimeout(timer); onDone(parseFeed(txt)); })
+    .catch(function(e){ clearTimeout(timer); onFail(e); });
+}
+
 function callApi(params, onDone, onFail, timeoutMs){
   var ms = timeoutMs || 15000;
   var url = APP_URL + '?' + params + '&_=' + Date.now();
@@ -1125,22 +1170,40 @@ function setSyncBusy(on){
 
 function loadData(manual){
   setSyncBusy(true);
+
+  /* ลำดับการดึงข้อมูล
+     1) ไฟล์ข้อมูลสาธารณะ — เร็วที่สุดและไม่ผูกบัญชี Google
+     2) Apps Script โดยตรง — ใช้เมื่อยังไม่ได้ตั้งไฟล์ หรือไฟล์มีปัญหา */
+  if(FEED_URL && window.fetch){
+    loadFeed(function(d){ afterLoad(d, manual); },
+             function(){ callApi('publicData=1', function(d){ afterLoad(d, manual); },
+                                 function(msg){ afterFail(msg); }); });
+    return;
+  }
   callApi('publicData=1', function(d){
-    setSyncBusy(false);
-    if(!d || !d.ok){
-      showError(d && d.error ? d.error : 'ระบบไม่ได้ส่งข้อมูลกลับมา');
-    }else{
-      $('errBox').style.display = 'none';
-      firstLoadDone = true;
-      render(d);
-      if(manual) flashSynced();
-    }
-    scheduleNext();
+    afterLoad(d, manual);
   }, function(msg){
-    setSyncBusy(false);
-    showError(msg);
-    scheduleNext();
+    afterFail(msg);
   });
+}
+
+function afterLoad(d, manual){
+  setSyncBusy(false);
+  if(!d || !d.ok){
+    showError(d && d.error ? d.error : 'ระบบไม่ได้ส่งข้อมูลกลับมา');
+  }else{
+    $('errBox').style.display = 'none';
+    firstLoadDone = true;
+    render(d);
+    if(manual) flashSynced();
+  }
+  scheduleNext();
+}
+
+function afterFail(msg){
+  setSyncBusy(false);
+  showError(msg);
+  scheduleNext();
 }
 
 function flashSynced(){
@@ -1202,14 +1265,15 @@ function showError(msg){
 }
 
 function render(d){
-  if(d.appUrl) APP_URL = d.appUrl;
+  /* ไม่เอา appUrl จากฝั่งระบบมาทับ เพราะเป็นที่อยู่แบบผูกโดเมน msu.ac.th
+     ซึ่งจะไปลบล้างวิธีเข้าสู่ระบบที่ผู้ใช้เลือกไว้เองจากกล่องตัวเลือก */
   applyAppUrl();
   if(d.feedback) paintRateStat(d.feedback);
   if(d.stat) renderKpi(d);
   if(d.calendar) initCalendar(d);
   $('asOf').textContent = thDate(d.today);
   if(d.updatedAt){
-    $('updatedAt').textContent = d.updatedAt;
+    $('updatedAt').textContent = d.cachedAt || d.updatedAt;
     $('pillUpdated').style.display = '';
   }
 

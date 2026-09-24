@@ -768,7 +768,7 @@ footer{border-top:1px solid var(--border);background:var(--surface);margin-top:4
     <div class="grid c4">
       <div class="card stat" style="--tint:var(--o-soft)">
         <div class="st-ic g-o"><svg viewBox="0 0 24 24"><path d="M17 20v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9.5" cy="7" r="4"/><path d="M22 20v-2a4 4 0 0 0-3-3.87"/></svg></div>
-        <div class="st-label">บุคลากรทั้งหมด</div>
+        <div class="st-label">ปฏิบัติงานวันนี้</div>
         <div class="st-num" id="nTotal"><div class="sk sk-num"></div></div>
         <div class="st-foot" id="fTotal"></div>
       </div>
@@ -1289,9 +1289,11 @@ function render(d){
     $('pillUpdated').style.display = '';
   }
 
-  /* การ์ดตัวเลข */
-  $('nTotal').textContent = num(d.totalPersonnel)+' คน';
-  $('fTotal').textContent = 'ปฏิบัติงานวันนี้ '+num(Math.max(0, d.totalPersonnel - d.todayCount))+' คน';
+  /* การ์ดตัวเลข
+     ตัวเลขเด่นคือจำนวนที่มาปฏิบัติงานวันนี้ เพราะเป็นค่าที่เปลี่ยนทุกวันและใช้ตัดสินใจจริง
+     ส่วนยอดบุคลากรทั้งหมดเป็นค่าคงที่ จึงอยู่เป็นคำอธิบายด้านล่าง */
+  $('nTotal').textContent = num(Math.max(0, d.totalPersonnel - d.todayCount))+' คน';
+  $('fTotal').textContent = 'จากบุคลากรทั้งหมด '+num(d.totalPersonnel)+' คน';
 
   $('nToday').textContent = num(d.todayCount)+' คน';
   var tb = d.todayByType || {};

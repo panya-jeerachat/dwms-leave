@@ -721,9 +721,10 @@ footer{border-top:1px solid var(--border);background:var(--surface);margin-top:4
 
     <h2 id="gateTitle">
       <span class="gate-ic"><svg viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="10" rx="2.5"/><path d="M8 10V7.5a4 4 0 0 1 8 0V10"/></svg></span>
-      เข้าสู่ระบบผู้ดูแล
+      เลือกวิธีเข้าสู่ระบบ
     </h2>
-    <p class="gate-lead">เลือกวิธีที่ใช้ได้กับเครื่องนี้ ระบบจะจำไว้ให้ ครั้งต่อไปกดปุ่มเดียวเข้าได้เลย</p>
+    <p class="gate-lead">เลือกวิธีที่ใช้ได้กับเครื่องนี้ ระบบจะจำไว้ให้ ครั้งต่อไปกดปุ่มเดียวเข้าได้เลย
+      ใช้ได้ทั้งบุคลากรที่จะยื่นใบลาและผู้ดูแลระบบ</p>
 
     <button type="button" class="gate-opt" data-mode="domain">
       <span class="go-ic go-ic-b"><svg viewBox="0 0 24 24"><path d="M3 21h18M5 21V10l7-5 7 5v11M9.5 21v-5h5v5"/></svg></span>
@@ -1875,9 +1876,13 @@ function initGate(){
   /* ลูกศรข้างปุ่มเข้าสู่ระบบ เปิดให้เลือกหรือเปลี่ยนวิธีได้ตลอด */
   $('loginMode').addEventListener('click',function(e){ e.preventDefault(); open(); });
 
-  /* ยังไม่เคยเลือก กดปุ่มเข้าสู่ระบบครั้งแรกให้เลือกก่อน */
-  $('loginTop').addEventListener('click',function(e){
-    if(!savedMode()){ e.preventDefault(); open(); }
+  /* ทุกปุ่มที่พาไปหน้าเข้าสู่ระบบ ถ้ายังไม่เคยเลือกวิธีให้เลือกก่อน
+     กันไม่ให้ผู้ใช้กดแล้วเจอหน้าเลือกบัญชีของ Google โดยไม่รู้ว่าต้องทำอะไร */
+  ['loginTop','ctaApply'].forEach(function(id){
+    var el=$(id); if(!el) return;
+    el.addEventListener('click',function(e){
+      if(!savedMode()){ e.preventDefault(); open(); }
+    });
   });
 
   Array.prototype.forEach.call(g.querySelectorAll('.gate-opt'),function(btn){

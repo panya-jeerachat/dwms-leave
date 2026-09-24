@@ -1197,8 +1197,10 @@ function afterLoad(d, manual){
   }else{
     $('errBox').style.display = 'none';
     firstLoadDone = true;
+    var stamp = d.cachedAt || d.updatedAt || '';
     render(d);
-    if(manual) flashSynced();
+    if(manual) flashSynced(stamp);
+    lastStamp = stamp;
   }
   scheduleNext();
 }
@@ -1209,12 +1211,19 @@ function afterFail(msg){
   scheduleNext();
 }
 
-function flashSynced(){
+/**
+ * แจ้งผลการกดซิงก์แบบตรงไปตรงมา
+ * ถ้าเวลาที่ระบบสร้างข้อมูลยังเป็นชุดเดิม แปลว่าไม่มีอะไรเปลี่ยน
+ * บอกไปตามนั้นดีกว่าขึ้นว่าสำเร็จแล้วปล่อยให้ผู้ใช้งงว่าทำไมตัวเลขเท่าเดิม
+ */
+var lastStamp = '';
+function flashSynced(stamp){
   var p = $('pillNext');
-  p.textContent = 'ซิงก์ข้อมูลเรียบร้อย';
-  p.style.color = '#17864B';
-  p.style.borderColor = '#9FE0BE';
-  setTimeout(function(){ p.style.color = ''; p.style.borderColor = ''; }, 2200);
+  var same = (stamp && stamp === lastStamp);
+  p.textContent = same ? 'ข้อมูลยังเป็นชุดเดิม' : 'ซิงก์ข้อมูลใหม่แล้ว';
+  p.style.color = same ? '#A65A05' : '#17864B';
+  p.style.borderColor = same ? '#F0C98A' : '#9FE0BE';
+  setTimeout(function(){ p.style.color = ''; p.style.borderColor = ''; }, 2600);
 }
 
 /** ตั้งเวลารอบถัดไป พร้อมนับถอยหลังให้เห็นว่าอีกกี่นาทีจะอัปเดต */

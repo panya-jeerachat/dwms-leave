@@ -708,7 +708,7 @@ footer{border-top:1px solid var(--border);background:var(--surface);margin-top:4
       <svg class="ic-sync" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-2.6-6.4M21 3v6h-6"/></svg>
       <b>ซิงก์ข้อมูลล่าสุด</b>
     </button>
-    <span class="pill pill-quiet" id="pillNext">รีเฟรชอัตโนมัติทุก 5 นาที</span>
+    <span class="pill pill-quiet" id="pillNext">รีเฟรชอัตโนมัติทุก 2 นาที</span>
   </div>
 </header>
 
@@ -1051,7 +1051,9 @@ function avatarGrad(seed){
    Apps Script ไม่ส่งหัว CORS หน้าเว็บภายนอกจึงใช้ fetch ตรงไม่ได้
    วิธีที่ใช้ได้คือแทรกแท็ก script แล้วให้ฝั่งระบบห่อผลลัพธ์ด้วยชื่อฟังก์ชัน
    ------------------------------------------------------------------- */
-var REFRESH_MS = 5 * 60 * 1000;   /* รีเฟรชอัตโนมัติทุก 5 นาที เหมาะกับจอแสดงผล */
+/* รีเฟรชทุก 2 นาที เพราะตอนนี้อ่านจากไฟล์นิ่งซึ่งเบามาก
+   และฝั่งระบบสร้างแคชใหม่ภายใน 1 นาทีหลังข้อมูลเปลี่ยน */
+var REFRESH_MS = 2 * 60 * 1000;
 var jsonpSeq = 0;
 var firstLoadDone = false;
 var refreshTimer = null, tickTimer = null, nextAt = 0;

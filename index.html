@@ -322,6 +322,14 @@ section{scroll-margin-top:90px}
 .tn-gr{background:var(--gr-soft)} .tn-gr .dd-num{color:#12855A}
 .tn-bl{background:var(--bl-soft)} .tn-bl .dd-num{color:#2A61BD}
 .dd-note{margin:4px 0 0;font-size:12.2px;color:var(--muted);line-height:1.8}
+.tn-o{background:var(--o-soft)} .tn-o .dd-num{color:#B45F0B}
+.dd-zero{opacity:.45}
+.per-wrap{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin:4px 0 14px}
+.per-tile{border-radius:15px;padding:11px 8px;text-align:center;position:relative}
+.per-ic{display:block;font-size:14px;line-height:1;margin-bottom:3px;opacity:.75}
+.t-o{background:var(--o-soft);color:#B45F0B}
+:root[data-theme="dark"] .tn-o .dd-num,:root[data-theme="dark"] .t-o{color:#FFB870}
+@media(max-width:420px){.per-wrap{gap:6px}.per-tile{padding:9px 4px}.per-tile .dd-lb{font-size:11.5px}}
 :root[data-theme="dark"] .tn-pk .dd-num{color:#FF9DC0}
 :root[data-theme="dark"] .tn-pu .dd-num{color:#B7A3FF}
 :root[data-theme="dark"] .tn-tl .dd-num{color:#6FE3DD}
@@ -1000,6 +1008,18 @@ var APP_URL = 'https://script.google.com/macros/s/AKfycbzn6b1edfqUSLRn-v320rQafQ
    =================================================================== */
 var FEED_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS8tPj5k1O7nqocYhdp6pQa3xU9X2AUZw1d6dbDJbV_9hbiJJu4M8oxvdWnbQLls3Y6dh7KKdby7fG2/pub?gid=1119609623&single=true&output=csv';
 
+/* ===================================================================
+   ไฟล์ข้อมูลสาธารณะแบบสด (แนะนำให้ตั้ง)
+   -------------------------------------------------------------------
+   FEED_URL ด้านบนผ่านแคช "เผยแพร่ไปยังเว็บ" ของ Google ซึ่งอัปเดตทุกราว 5 นาที
+   ช่องนี้อ่านจากไฟล์ Sheets แยกโดยตรง ได้ค่าปัจจุบันทันทีที่ระบบบันทึก
+
+   วิธีได้มา: เปิด Apps Script ไฟล์ 10_Misc เลือกฟังก์ชัน setupPublicSheet แล้วกดเรียกใช้
+   ระบบจะสร้างไฟล์ ตั้งสิทธิ์ และบอกรหัสไฟล์ที่ต้องนำมาวางที่นี่
+   ไฟล์นี้มีเฉพาะข้อมูลสรุปที่หน้าเว็บแสดงอยู่แล้ว ไม่มีชื่อหรือเหตุผลการลา
+   =================================================================== */
+var LIVE_SHEET_ID = '';
+
 var $ = function(id){ return document.getElementById(id); };
 function esc(v){
   return String(v==null?'':v)
@@ -1120,8 +1140,16 @@ function parseFeed(txt){
   return JSON.parse(json);
 }
 
-function loadFeed(onDone, onFail, timeoutMs){
-  var url = FEED_URL + (FEED_URL.indexOf('?')>=0?'&':'?') + '_=' + Date.now();
+/** ที่อยู่อ่านแบบสดจากไฟล์สาธารณะ อ่านเฉพาะคอลัมน์ A ของชีต PublicCache */
+function liveUrl(){
+  if(!LIVE_SHEET_ID) return '';
+  return 'https://docs.google.com/spreadsheets/d/'+encodeURIComponent(LIVE_SHEET_ID)+
+         '/gviz/tq?tqx=out:csv&headers=0&sheet=PublicCache&tq='+encodeURIComponent('select A');
+}
+
+function loadFeed(onDone, onFail, timeoutMs, urlOverride){
+  var base = urlOverride || FEED_URL;
+  var url = base + (base.indexOf('?')>=0?'&':'?') + '_=' + Date.now();
   var ctl = (typeof AbortController !== 'undefined') ? new AbortController() : null;
   var timer = setTimeout(function(){ if(ctl) ctl.abort(); }, timeoutMs || 12000);
   var opt = { method:'GET', credentials:'omit', mode:'cors', redirect:'follow', cache:'no-store' };
@@ -1174,15 +1202,23 @@ function setSyncBusy(on){
 function loadData(manual){
   setSyncBusy(true);
 
-  /* ลำดับการดึงข้อมูล
-     1) ไฟล์ข้อมูลสาธารณะ — เร็วที่สุดและไม่ผูกบัญชี Google
-     2) Apps Script โดยตรง — ใช้เมื่อยังไม่ได้ตั้งไฟล์ หรือไฟล์มีปัญหา */
-  if(FEED_URL && window.fetch){
-    loadFeed(function(d){ afterLoad(d, manual); },
-             function(){ callApi('publicData=1', function(d){ afterLoad(d, manual); },
-                                 function(msg){ afterFail(msg); }); });
+  /* ลำดับการดึงข้อมูล เรียงจากสดที่สุดไปหาสำรอง
+     1) ไฟล์สาธารณะแยก อ่านแบบสด — ได้ค่าปัจจุบันทันที
+     2) ไฟล์ที่เผยแพร่ไปยังเว็บ    — ไม่ผูกบัญชี แต่ช้ากว่าราว 5 นาที
+     3) Apps Script โดยตรง        — ทางสุดท้าย เครื่องที่ลงชื่อหลายบัญชีอาจใช้ไม่ได้ */
+  var viaApi = function(){
+    callApi('publicData=1', function(d){ afterLoad(d, manual, 'api'); },
+            function(msg){ afterFail(msg); });
+  };
+  var viaFeed = function(){
+    if(!FEED_URL || !window.fetch){ viaApi(); return; }
+    loadFeed(function(d){ afterLoad(d, manual, 'feed'); }, viaApi);
+  };
+  if(LIVE_SHEET_ID && window.fetch){
+    loadFeed(function(d){ afterLoad(d, manual, 'live'); }, viaFeed, 12000, liveUrl());
     return;
   }
+  if(FEED_URL && window.fetch){ viaFeed(); return; }
   callApi('publicData=1', function(d){
     afterLoad(d, manual);
   }, function(msg){
@@ -1190,7 +1226,9 @@ function loadData(manual){
   });
 }
 
-function afterLoad(d, manual){
+var DATA_SRC='';
+function afterLoad(d, manual, src){
+  DATA_SRC = src || DATA_SRC;
   setSyncBusy(false);
   if(!d || !d.ok){
     showError(d && d.error ? d.error : 'ระบบไม่ได้ส่งข้อมูลกลับมา');
@@ -1220,7 +1258,9 @@ var lastStamp = '';
 function flashSynced(stamp){
   var p = $('pillNext');
   var same = (stamp && stamp === lastStamp);
-  p.textContent = same ? 'ข้อมูลยังเป็นชุดเดิม' : 'ซิงก์ข้อมูลใหม่แล้ว';
+  p.textContent = same
+    ? (DATA_SRC==='feed' ? 'ข้อมูลยังเป็นชุดเดิม (แคชของ Google อัปเดตทุก 5 นาที)' : 'ข้อมูลยังเป็นชุดเดิม')
+    : 'ซิงก์ข้อมูลใหม่แล้ว';
   p.style.color = same ? '#A65A05' : '#17864B';
   p.style.borderColor = same ? '#F0C98A' : '#9FE0BE';
   setTimeout(function(){ p.style.color = ''; p.style.borderColor = ''; }, 2600);
@@ -1298,8 +1338,13 @@ function render(d){
   $('nToday').textContent = num(d.todayCount)+' คน';
   var tb = d.todayByType || {};
   var keys = Object.keys(tb);
+  var tp = d.todayByPeriod || {};
+  var pchips = periodOrder().filter(function(k){ return tp[k]; }).map(function(k){
+    return '<span class="tag '+periodTag(k)+'" style="font-size:11.5px;padding:2px 9px">'+esc(periodShort(k))+' '+tp[k]+'</span>';
+  }).join(' ');
   $('fToday').innerHTML = keys.length
-    ? keys.map(function(k){ return '<span class="tag '+typeTag(k)+'" style="font-size:11.5px;padding:2px 9px">'+esc(k)+' '+tb[k]+'</span>'; }).join(' ')
+    ? keys.map(function(k){ return '<span class="tag '+typeTag(k)+'" style="font-size:11.5px;padding:2px 9px">'+esc(k)+' '+tb[k]+'</span>'; }).join(' ')+
+      (pchips ? '<div style="margin-top:5px">'+pchips+'</div>' : '')
     : 'ไม่มีผู้ลาในวันนี้';
 
   $('nPending').textContent = num(d.pendingCount)+' รายการ';
@@ -1333,13 +1378,13 @@ function render(d){
     $('todayList').innerHTML = '';
   }else if(!d.showNames){
     /* ปิดการแสดงรายชื่อไว้ แต่ยังสรุปเป็นจำนวนแยกตามสายงานให้ผู้บริหารดูได้ */
-    $('todaySub').textContent = 'วันนี้มีผู้ลา '+num(d.todayCount)+' คน แยกตามสายงานดังนี้';
-    $('todayList').innerHTML = groupRows(d) +
+    $('todaySub').textContent = 'วันนี้มีผู้ลา '+num(d.todayCount)+' คน';
+    $('todayList').innerHTML = periodTiles(d.todayByPeriod) + groupRows(d) +
       '<p class="grp-note">หน่วยงานปิดการแสดงรายชื่อในหน้าสาธารณะไว้ '+
       'เนื่องจากชื่อผู้ลาและประเภทการลาเป็นข้อมูลส่วนบุคคล ผู้มีสิทธิ์ดูรายละเอียดกรุณาเข้าสู่ระบบ</p>';
   }else{
     $('todaySub').textContent = 'วันนี้มีผู้ลา '+num(d.todayCount)+' คน';
-    $('todayList').innerHTML = list.map(function(x){
+    $('todayList').innerHTML = periodTiles(d.todayByPeriod) + list.map(function(x){
       var ini = String(x.name||'?').replace(/^(นาย|นางสาว|นาง)/,'').trim().charAt(0) || '?';
       return '<div class="row">'+
         '<div class="row-ic" style="background:'+avatarGrad(x.name)+'">'+esc(ini)+'</div>'+
@@ -1572,6 +1617,15 @@ function openDay(key){
     h += '<div class="dd-sec"><h4>แยกตามประเภทการลา</h4>'+tiles(c.t,typeTone)+'</div>';
   if(c.g && Object.keys(c.g).length)
     h += '<div class="dd-sec"><h4>แยกตามสายงาน</h4>'+tiles(c.g,groupTone)+'</div>';
+  /* ช่วงเวลา แสดงครบทั้งสามแบบเสมอ แม้เป็นศูนย์ จะได้เห็นการจำแนกชัดเจน */
+  if(c.h && Object.keys(c.h).length){
+    var hh={}; periodOrder().forEach(function(k){ hh[k]=c.h[k]||0; });
+    h += '<div class="dd-sec"><h4>แยกตามช่วงเวลา</h4><div class="dd-tiles">'+
+      periodOrder().map(function(k){
+        return '<div class="dd-tile '+periodTone(k)+(hh[k]?'':' dd-zero')+'">'+
+          '<span class="dd-num">'+num(hh[k])+'</span><span class="dd-lb">'+esc(k)+'</span></div>';
+      }).join('')+'</div></div>';
+  }
 
   h += '<p class="dd-note">หน้าสาธารณะแสดงเฉพาะจำนวน ไม่แสดงรายชื่อผู้ลา '+
        'ผู้มีสิทธิ์ดูรายละเอียดรายบุคคลกรุณาเข้าสู่ระบบ</p>';
@@ -1589,6 +1643,27 @@ $('calToday').addEventListener('click', function(){
   CAL.y = Number(p[0]); CAL.m = Number(p[1]); CAL.sel = '';
   drawCalendar();
 });
+
+/* =================================================================
+   ช่วงเวลาลา — เต็มวัน / ครึ่งวันเช้า / ครึ่งวันบ่าย
+   ================================================================= */
+function periodOrder(){ return ['เต็มวัน','ครึ่งวันเช้า','ครึ่งวันบ่าย']; }
+function periodShort(k){ return k==='ครึ่งวันเช้า'?'ครึ่งเช้า':(k==='ครึ่งวันบ่าย'?'ครึ่งบ่าย':k); }
+function periodTag(k){ return k==='ครึ่งวันเช้า'?'t-o':(k==='ครึ่งวันบ่าย'?'t-bl':'t-gr'); }
+function periodTone(k){ return k==='ครึ่งวันเช้า'?'tn-o':(k==='ครึ่งวันบ่าย'?'tn-bl':'tn-gr'); }
+function periodIcon(k){ return k==='ครึ่งวันเช้า'?'☀':(k==='ครึ่งวันบ่าย'?'◐':'●'); }
+
+/** กรอบตัวเลขผู้ลาวันนี้แยกตามช่วงเวลา แสดงครบทั้งสามแบบ */
+function periodTiles(tp){
+  tp = tp || {};
+  return '<div class="per-wrap">'+periodOrder().map(function(k){
+    var n = tp[k]||0;
+    return '<div class="per-tile '+periodTone(k)+(n?'':' dd-zero')+'">'+
+      '<span class="per-ic">'+periodIcon(k)+'</span>'+
+      '<span class="dd-num">'+num(n)+'</span>'+
+      '<span class="dd-lb">'+esc(k)+'</span></div>';
+  }).join('')+'</div>';
+}
 
 /**
  * สรุปจำนวนผู้ลาแยกตามสายงาน — สายวิชาการ และ สายสนับสนุน

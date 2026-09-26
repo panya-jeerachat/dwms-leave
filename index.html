@@ -322,6 +322,16 @@ section{scroll-margin-top:90px}
 .tn-gr{background:var(--gr-soft)} .tn-gr .dd-num{color:#12855A}
 .tn-bl{background:var(--bl-soft)} .tn-bl .dd-num{color:#2A61BD}
 .dd-note{margin:4px 0 0;font-size:12.2px;color:var(--muted);line-height:1.8}
+/* การ์ดตัวเลขกดได้ */
+.card.stat[data-info]{cursor:pointer}
+.card.stat[data-info]:focus-visible{outline:3px solid rgba(116,92,233,.45);outline-offset:3px}
+.st-more{position:absolute;right:16px;bottom:12px;font-size:11.5px;font-weight:600;color:var(--muted);
+  opacity:.55;transition:opacity .18s;z-index:1}
+.card.stat[data-info]:hover .st-more{opacity:1;color:var(--pu1)}
+@media(hover:none){.st-more{opacity:.8}}
+.wk-list{display:flex;flex-direction:column;gap:7px}
+.wk-row{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;
+  background:var(--soft);border-radius:12px;padding:8px 12px;font-size:13px}
 .tn-o{background:var(--o-soft)} .tn-o .dd-num{color:#B45F0B}
 .dd-zero{opacity:.45}
 .per-wrap{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin:4px 0 14px}
@@ -774,25 +784,25 @@ footer{border-top:1px solid var(--border);background:var(--surface);margin-top:4
   <!-- ภาพรวมวันนี้ -->
   <section id="overview">
     <div class="grid c4">
-      <div class="card stat" style="--tint:var(--o-soft)">
+      <div class="card stat" style="--tint:var(--o-soft)" role="button" tabindex="0" data-info="work" title="กดเพื่อดูรายละเอียด">
         <div class="st-ic g-o"><svg viewBox="0 0 24 24"><path d="M17 20v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9.5" cy="7" r="4"/><path d="M22 20v-2a4 4 0 0 0-3-3.87"/></svg></div>
         <div class="st-label">ปฏิบัติงานวันนี้</div>
         <div class="st-num" id="nTotal"><div class="sk sk-num"></div></div>
         <div class="st-foot" id="fTotal"></div>
       </div>
-      <div class="card stat" style="--tint:var(--pk-soft)">
+      <div class="card stat" style="--tint:var(--pk-soft)" role="button" tabindex="0" data-info="leave" title="กดเพื่อดูรายละเอียด">
         <div class="st-ic g-pk"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
         <div class="st-label">ผู้ลาวันนี้</div>
         <div class="st-num" id="nToday"><div class="sk sk-num"></div></div>
         <div class="st-foot" id="fToday"></div>
       </div>
-      <div class="card stat" style="--tint:var(--pu-soft)">
+      <div class="card stat" style="--tint:var(--pu-soft)" role="button" tabindex="0" data-info="pending" title="กดเพื่อดูรายละเอียด">
         <div class="st-ic g-pu"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
         <div class="st-label">ใบลารออนุมัติ</div>
         <div class="st-num" id="nPending"><div class="sk sk-num"></div></div>
         <div class="st-foot" id="fPending"></div>
       </div>
-      <div class="card stat" style="--tint:var(--tl-soft)">
+      <div class="card stat" style="--tint:var(--tl-soft)" role="button" tabindex="0" data-info="week" title="กดเพื่อดูรายละเอียด">
         <div class="st-ic g-tl"><svg viewBox="0 0 24 24"><path d="M3 17l5-6 4 4 5-7 4 5"/></svg></div>
         <div class="st-label">สัปดาห์นี้</div>
         <div class="st-num" id="nWeek"><div class="sk sk-num"></div></div>
@@ -1018,7 +1028,7 @@ var FEED_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS8tPj5k1O7nqocY
    ระบบจะสร้างไฟล์ ตั้งสิทธิ์ และบอกรหัสไฟล์ที่ต้องนำมาวางที่นี่
    ไฟล์นี้มีเฉพาะข้อมูลสรุปที่หน้าเว็บแสดงอยู่แล้ว ไม่มีชื่อหรือเหตุผลการลา
    =================================================================== */
-var LIVE_SHEET_ID = '';
+var LIVE_SHEET_ID = '1ifE966tNnwhCHla6qH79W_hJALhJSSVtV7WriDw2gqU';
 
 var $ = function(id){ return document.getElementById(id); };
 function esc(v){
@@ -1316,7 +1326,9 @@ function showError(msg){
   });
 }
 
+var LAST = null;   /* ข้อมูลชุดล่าสุด ใช้เปิดกล่องรายละเอียดของการ์ดตัวเลข */
 function render(d){
+  LAST = d;
   /* ไม่เอา appUrl จากฝั่งระบบมาทับ เพราะเป็นที่อยู่แบบผูกโดเมน msu.ac.th
      ซึ่งจะไปลบล้างวิธีเข้าสู่ระบบที่ผู้ใช้เลือกไว้เองจากกล่องตัวเลือก */
   applyAppUrl();
@@ -1635,6 +1647,102 @@ function openDay(key){
 }
 
 function closeDay(){ if($('dayDlg')) $('dayDlg').hidden = true; }
+
+/* =================================================================
+   กล่องรายละเอียดของการ์ดตัวเลข — กดการ์ดแล้วเด้งขึ้นมา
+   ใช้กรอบตัวเลขแบบเดียวกับกล่องรายวันของปฏิทิน เป็นจำนวนล้วน ไม่มีชื่อบุคคล
+   ================================================================= */
+function infoTiles(obj, toneFn, order){
+  var keys = order ? order.filter(function(k){ return k in (obj||{}); }) : Object.keys(obj||{});
+  if(!order) keys.sort(function(a,b){ return (obj[b]||0)-(obj[a]||0); });
+  if(!keys.length) return '<p class="dd-note">ไม่มีข้อมูล</p>';
+  return '<div class="dd-tiles">'+keys.map(function(k){
+    var n=obj[k]||0;
+    return '<div class="dd-tile '+toneFn(k)+(n?'':' dd-zero')+'"><span class="dd-num">'+num(n)+'</span>'+
+      '<span class="dd-lb">'+esc(k)+'</span></div>';
+  }).join('')+'</div>';
+}
+function typeToneOf(t){
+  if(t==='ลาป่วย') return 'tn-pk';
+  if(t==='ลากิจส่วนตัว') return 'tn-pu';
+  if(t==='ลาพักผ่อน') return 'tn-tl';
+  if(t==='ลาคลอดบุตร') return 'tn-gr';
+  return 'tn-bl';
+}
+function groupToneOf(g){ return g==='สายวิชาการ' ? 'tn-bl' : 'tn-tl'; }
+
+function openInfo(kind){
+  var d = LAST; if(!d) return;
+  var groups = d.groups || ['สายวิชาการ','สายสนับสนุน'];
+  var total = d.totalPersonnel||0, leave = d.todayCount||0;
+  var h = '', title = '', big = '', sub = '';
+
+  if(kind==='work'){
+    title='ปฏิบัติงานวันนี้'; big=num(Math.max(0,total-leave)); sub='จากบุคลากรทั้งหมด '+num(total)+' คน';
+    var pb = d.personnelByGroup||{}, tb = d.todayByGroup||{}, work={}, all={};
+    groups.forEach(function(g){ all[g]=pb[g]||0; work[g]=Math.max(0,(pb[g]||0)-(tb[g]||0)); });
+    h += '<div class="dd-sec"><h4>ปฏิบัติงานวันนี้ แยกตามสายงาน</h4>'+infoTiles(work,groupToneOf,groups)+'</div>';
+    h += '<div class="dd-sec"><h4>บุคลากรทั้งหมด แยกตามสายงาน</h4>'+infoTiles(all,groupToneOf,groups)+'</div>';
+    var rate = total ? Math.round((total-leave)/total*1000)/10 : 0;
+    h += '<div class="dd-sum"><div class="dd-a"><span>'+rate+'%</span><small>อัตราการมาปฏิบัติงาน</small></div>'+
+         '<div class="dd-p"><span>'+num(leave)+'</span><small>ลาวันนี้</small></div></div>';
+  }
+  else if(kind==='leave'){
+    title='ผู้ลาวันนี้'; big=num(leave); sub=leave?'ลาและได้รับอนุมัติแล้วในวันนี้':'วันนี้บุคลากรปฏิบัติงานครบทุกคน';
+    if(leave){
+      h += '<div class="dd-sec"><h4>แยกตามประเภทการลา</h4>'+infoTiles(d.todayByType,typeToneOf)+'</div>';
+      h += '<div class="dd-sec"><h4>แยกตามสายงาน</h4>'+infoTiles(d.todayByGroup,groupToneOf,groups)+'</div>';
+      h += '<div class="dd-sec"><h4>แยกตามช่วงเวลา</h4>'+infoTiles(d.todayByPeriod,periodTone,periodOrder())+'</div>';
+    }
+  }
+  else if(kind==='pending'){
+    title='ใบลารออนุมัติ'; big=num(d.pendingCount||0); sub=d.pendingCount?'อยู่ระหว่างการพิจารณาตามลำดับขั้น':'ไม่มีรายการค้าง';
+    if(d.pendingCount){
+      h += '<div class="dd-sec"><h4>แยกตามประเภทการลา</h4>'+infoTiles(d.pendingByType,typeToneOf)+'</div>';
+      if(d.pendingByStep && Object.keys(d.pendingByStep).length)
+        h += '<div class="dd-sec"><h4>ค้างอยู่ที่ขั้น</h4>'+infoTiles(d.pendingByStep,function(){ return 'tn-pu'; })+'</div>';
+    }
+  }
+  else if(kind==='week'){
+    var w = d.week||{};
+    title='สรุปการลาสัปดาห์นี้'; big=num(w.times||0)+' ครั้ง';
+    sub=thRangeShort(w.start,w.end)+' • ผู้ลา '+num(w.leaverCount||0)+' คน • รวม '+num(w.days||0)+' วัน';
+    var bt={}; (w.byType||[]).forEach(function(x){ bt[x.type]=x.people||x.times||0; });
+    h += '<div class="dd-sum"><div class="dd-a"><span>'+num(w.leaverCount||0)+'</span><small>ผู้ลา (คน)</small></div>'+
+         '<div class="dd-p"><span>'+num(w.days||0)+'</span><small>รวมวันลา</small></div></div>';
+    if((w.byType||[]).length){
+      h += '<div class="dd-sec"><h4>แยกตามประเภทการลา (คน)</h4>'+infoTiles(bt,typeToneOf)+'</div>';
+      h += '<div class="dd-sec"><h4>รายละเอียดแต่ละประเภท</h4><div class="wk-list">'+
+        (w.byType||[]).map(function(x){
+          return '<div class="wk-row"><span class="tag '+typeTag(x.type)+'">'+esc(x.type)+'</span>'+
+            '<span>'+num(x.people||0)+' คน • '+num(x.times||0)+' ครั้ง • '+num(x.days||0)+' วัน</span></div>';
+        }).join('')+'</div></div>';
+    }
+    if(d.weekByGroup) h += '<div class="dd-sec"><h4>ผู้ลาแยกตามสายงาน</h4>'+infoTiles(d.weekByGroup,groupToneOf,groups)+'</div>';
+  }
+
+  h = '<div class="dd-head"><div><b>'+esc(title)+'</b><small>'+esc(sub)+'</small></div>'+
+      '<span class="dd-total">'+big+'</span></div>' + h +
+      '<p class="dd-note">หน้าสาธารณะแสดงเฉพาะจำนวน ไม่แสดงรายชื่อผู้ลา • ข้อมูล ณ '+esc(thDate(d.today||''))+'</p>';
+  $('ddBody').innerHTML = h;
+  $('dayDlg').hidden = false;
+}
+
+/** ช่วงวันที่แบบย่อ ใช้หัวกล่องสรุปสัปดาห์ */
+function thRangeShort(a,b){
+  if(!a) return '';
+  try{ return thRange(a,b); }catch(e){ return a+' – '+b; }
+}
+
+/* ผูกการกดการ์ด รองรับทั้งเมาส์และคีย์บอร์ด */
+Array.prototype.forEach.call(document.querySelectorAll('[data-info]'), function(el){
+  var k = el.getAttribute('data-info');
+  var more = document.createElement('span');
+  more.className = 'st-more'; more.textContent = 'ดูรายละเอียด ›';
+  el.appendChild(more);
+  el.addEventListener('click', function(){ openInfo(k); });
+  el.addEventListener('keydown', function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); openInfo(k); } });
+});
 
 $('calPrev').addEventListener('click', function(){ shiftMonth(-1); });
 $('calNext').addEventListener('click', function(){ shiftMonth(1); });

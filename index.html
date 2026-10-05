@@ -664,6 +664,35 @@ footer{border-top:1px solid var(--border);background:var(--surface);margin-top:4
   .brand small{display:none}
 }
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* ---- คู่มือการใช้งาน: ไอคอนสีไดนามิก ไล่เฉดสีเคลื่อนไหวตลอดเวลา ---- */
+.mn-wrap{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:18px}
+.mn-card{position:relative;display:flex;align-items:center;gap:16px;padding:18px 20px;border-radius:22px;
+  background:var(--surface);border:1px solid var(--border);box-shadow:var(--shadow);text-decoration:none;color:inherit;
+  overflow:hidden;transition:transform .22s ease,box-shadow .22s ease}
+.mn-card:hover{transform:translateY(-4px);box-shadow:0 18px 38px rgba(38,38,38,.14)}
+.mn-card:focus-visible{outline:3px solid rgba(116,92,233,.45);outline-offset:3px}
+.mn-card::before{content:'';position:absolute;inset:auto -40px -60px auto;width:150px;height:150px;border-radius:50%;opacity:.14;filter:blur(2px)}
+.mn-staff::before{background:#8B5CF6} .mn-appr::before{background:#14B8A6}
+.mn-ic{flex:0 0 auto;width:62px;height:62px;border-radius:19px;display:flex;align-items:center;justify-content:center;
+  background-size:300% 300%;animation:mnFlow 6s ease infinite;box-shadow:0 10px 24px rgba(0,0,0,.16)}
+.mn-staff .mn-ic{background-image:linear-gradient(135deg,#6D5DF5,#3B82F6,#EC4899,#F59E0B,#6D5DF5)}
+.mn-appr .mn-ic{background-image:linear-gradient(135deg,#10B981,#06B6D4,#6366F1,#F43F5E,#10B981)}
+.mn-ic svg{width:30px;height:30px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;
+  animation:mnBob 3s ease-in-out infinite}
+.mn-card:hover .mn-ic{animation-duration:2.2s}
+@keyframes mnFlow{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+@keyframes mnBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-2px) rotate(-4deg)}}
+.mn-tx{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.45}
+.mn-tx small{font-size:12px;color:var(--muted);font-weight:600}
+.mn-tx b{font-size:17px;font-weight:700}
+.mn-tx em{font-style:normal;font-size:12.8px;color:var(--muted)}
+.mn-go{flex:0 0 auto;display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:700;padding:6px 11px;border-radius:999px;
+  background:var(--soft,#F4F4F1);color:var(--text)}
+.mn-go svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;transition:transform .2s}
+.mn-card:hover .mn-go svg{transform:translate(2px,-2px)}
+@media(max-width:720px){.mn-wrap{grid-template-columns:1fr}.mn-go{display:none}}
+@media(prefers-reduced-motion:reduce){.mn-ic,.mn-ic svg{animation:none}}
 </style>
 </head>
 <body>
@@ -933,6 +962,28 @@ footer{border-top:1px solid var(--border);background:var(--surface);margin-top:4
         </a>
         <p class="cta-url" id="ctaUrl"></p>
       </div>
+    </div>
+
+    <!-- คู่มือการใช้งาน วางต่อจากช่องทางเข้าสู่ระบบ -->
+    <div class="mn-wrap">
+      <a class="mn-card mn-staff" href="https://eng.msu.ac.th/leave/%E0%B8%84%E0%B8%B9%E0%B9%88%E0%B8%A1%E0%B8%B7%E0%B8%AD%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B9%83%E0%B8%8A%E0%B9%89%E0%B8%87%E0%B8%B2%E0%B8%99%E0%B8%A3%E0%B8%B0%E0%B8%9A%E0%B8%9A%E0%B8%88%E0%B8%B1%E0%B8%94%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%A7%E0%B8%B1%E0%B8%99%E0%B8%A5%E0%B8%B2%E0%B8%AA%E0%B8%B3%E0%B8%AB%E0%B8%A3%E0%B8%B1%E0%B8%9A%E0%B8%9A%E0%B8%B8%E0%B8%84%E0%B8%A5%E0%B8%B2%E0%B8%81%E0%B8%A3.pdf" target="_blank" rel="noopener">
+        <span class="mn-ic"><svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><path d="M9 7h7M9 11h5"/></svg></span>
+        <span class="mn-tx">
+          <small>คู่มือการใช้งาน</small>
+          <b>สำหรับบุคลากร</b>
+          <em>ยื่นใบลา ติดตามสถานะ ดูสิทธิวันลา และพิมพ์แบบใบลา</em>
+        </span>
+        <span class="mn-go">PDF<svg viewBox="0 0 24 24"><path d="M7 17 17 7M8 7h9v9"/></svg></span>
+      </a>
+      <a class="mn-card mn-appr" href="https://eng.msu.ac.th/leave/%E0%B8%84%E0%B8%B9%E0%B9%88%E0%B8%A1%E0%B8%B7%E0%B8%AD%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B9%83%E0%B8%8A%E0%B9%89%E0%B8%87%E0%B8%B2%E0%B8%99%E0%B8%A3%E0%B8%B0%E0%B8%9A%E0%B8%9A%E0%B8%88%E0%B8%B1%E0%B8%94%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%A7%E0%B8%B1%E0%B8%99%E0%B8%A5%E0%B8%B2%E0%B8%AA%E0%B8%B3%E0%B8%AB%E0%B8%A3%E0%B8%B1%E0%B8%9A%E0%B8%9C%E0%B8%B9%E0%B9%89%E0%B8%AD%E0%B8%99%E0%B8%B8%E0%B8%A1%E0%B8%B1%E0%B8%95%E0%B8%B4.pdf" target="_blank" rel="noopener">
+        <span class="mn-ic"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg></span>
+        <span class="mn-tx">
+          <small>คู่มือการใช้งาน</small>
+          <b>สำหรับผู้อนุมัติ</b>
+          <em>รับอีเมลแจ้งเตือน ตรวจใบลา และพิจารณาอนุมัติตามลำดับขั้น</em>
+        </span>
+        <span class="mn-go">PDF<svg viewBox="0 0 24 24"><path d="M7 17 17 7M8 7h9v9"/></svg></span>
+      </a>
     </div>
   </section>
 

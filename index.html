@@ -693,6 +693,29 @@ footer{border-top:1px solid var(--border);background:var(--surface);margin-top:4
 .mn-card:hover .mn-go svg{transform:translate(2px,-2px)}
 @media(max-width:720px){.mn-wrap{grid-template-columns:1fr}.mn-go{display:none}}
 @media(prefers-reduced-motion:reduce){.mn-ic,.mn-ic svg{animation:none}}
+
+/* ---- แถบเมนูหลังเพิ่มเมนู "ยื่นใบลาและไปปฏิบัติราชการ" ที่ยาวขึ้น ----
+   จอกว้าง: แสดงเต็ม | จอกลาง: กระชับระยะ ซ่อนบรรทัดรองของชื่อระบบและคำว่า "ตามระบบ" | จอแคบ: ใช้ปุ่มเมนูพับ */
+.nav-in{max-width:1320px}
+@media(max-width:1500px){
+  .nav-links{gap:2px}
+  .nav-links a{padding:8px 10px;font-size:13.5px}
+  .brand small{display:none}
+  #themeTxt{display:none}
+}
+@media(max-width:1240px){
+  .nav-links{
+    position:fixed;left:0;right:0;top:calc(66px + env(safe-area-inset-top,0px));
+    background:var(--surface);border-bottom:1px solid var(--border);
+    flex-direction:column;align-items:stretch;gap:2px;padding:12px 18px 18px;
+    box-shadow:0 18px 34px rgba(38,38,38,.1);display:none;
+  }
+  .nav-links.open{display:flex}
+  .nav-links a{padding:12px 14px;border-radius:13px;text-align:center;font-size:14px}
+  .nav-toggle{display:block}
+  .brand small{display:block}
+  #themeTxt{display:inline}
+}
 </style>
 </head>
 <body>
@@ -724,7 +747,7 @@ footer{border-top:1px solid var(--border);background:var(--surface);margin-top:4
       <a href="#week">สรุปสัปดาห์นี้</a>
       <a href="#calendar">ปฏิทิน</a>
       <a href="#holidays">วันหยุดราชการ</a>
-      <a href="#apply">ยื่นใบลา</a>
+      <a href="#apply">ยื่นใบลาและไปปฏิบัติราชการ</a>
       <a href="#kpi">ตัวชี้วัด</a>
       <button type="button" class="theme-btn" id="themeBtn" title="สลับธีมสี" aria-label="สลับธีมสี">
         <svg class="ic-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.4"/><path d="M12 2v2.4M12 19.6V22M2 12h2.4M19.6 12H22M4.6 4.6l1.7 1.7M17.7 17.7l1.7 1.7M19.4 4.6l-1.7 1.7M6.3 17.7l-1.7 1.7"/></svg>
@@ -771,7 +794,7 @@ footer{border-top:1px solid var(--border);background:var(--surface);margin-top:4
       เลือกวิธีเข้าสู่ระบบ
     </h2>
     <p class="gate-lead">เลือกวิธีที่ใช้ได้กับเครื่องนี้ ระบบจะจำไว้ให้ ครั้งต่อไปกดปุ่มเดียวเข้าได้เลย
-      ใช้ได้ทั้งบุคลากรที่จะยื่นใบลาและผู้ดูแลระบบ</p>
+      ใช้ได้ทั้งบุคลากรที่จะยื่นใบลาและไปปฏิบัติราชการ และผู้ดูแลระบบ</p>
 
     <button type="button" class="gate-opt" data-mode="domain">
       <span class="go-ic go-ic-b"><svg viewBox="0 0 24 24"><path d="M3 21h18M5 21V10l7-5 7 5v11M9.5 21v-5h5v5"/></svg></span>
@@ -953,12 +976,12 @@ footer{border-top:1px solid var(--border);background:var(--surface);margin-top:4
       <div class="cta-in">
         <img src="logo.png" alt="" class="cta-logo" onerror="this.remove()">
         <span class="cta-eyebrow">ช่องทางผู้ขอรับบริการ</span>
-        <h2 class="cta-title">ยื่นใบลาออนไลน์</h2>
+        <h2 class="cta-title">ยื่นใบลาและไปปฏิบัติราชการแบบออนไลน์</h2>
         <p class="cta-sub">บุคลากรคณะวิศวกรรมศาสตร์ เข้าสู่ระบบด้วยรหัสบุคลากรหรืออีเมลของท่าน
-          เพื่อยื่นใบลา ตรวจสิทธิวันลาคงเหลือ และติดตามสถานะเรื่องของตนเอง</p>
+          เพื่อยื่นใบลาและขอไปปฏิบัติราชการ ตรวจสิทธิวันลาคงเหลือ และติดตามสถานะเรื่องของตนเอง</p>
         <a class="cta-btn" id="ctaApply" href="#" target="_blank" rel="noopener">
           <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M12 12v6M9 15h6"/></svg>
-          เข้าสู่ระบบเพื่อยื่นใบลา
+          เข้าสู่ระบบเพื่อยื่นใบลาและไปปฏิบัติราชการ
         </a>
         <p class="cta-url" id="ctaUrl"></p>
       </div>
@@ -971,7 +994,7 @@ footer{border-top:1px solid var(--border);background:var(--surface);margin-top:4
         <span class="mn-tx">
           <small>คู่มือการใช้งาน</small>
           <b>สำหรับบุคลากร</b>
-          <em>ยื่นใบลา ติดตามสถานะ ดูสิทธิวันลา และพิมพ์แบบใบลา</em>
+          <em>ยื่นใบลาและไปปฏิบัติราชการ ติดตามสถานะ ดูสิทธิวันลา และพิมพ์แบบใบลา</em>
         </span>
         <span class="mn-go">PDF<svg viewBox="0 0 24 24"><path d="M7 17 17 7M8 7h9v9"/></svg></span>
       </a>

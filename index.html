@@ -716,6 +716,94 @@ footer{border-top:1px solid var(--border);background:var(--surface);margin-top:4
   .brand small{display:block}
   #themeTxt{display:inline}
 }
+
+/* =================================================================
+   เส้นทางการกำกับติดตามใบลา — ภาพ 3 มิติด้วย CSS (ไม่ต้องโหลดไลบรารี เร็ว ใช้ได้ทุกเบราว์เซอร์)
+   ================================================================= */
+.rt-lead{color:var(--text2);font-size:14.5px;line-height:1.75;margin:-6px 0 14px;max-width:880px}
+.rt-chips{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:6px}
+.rt-chip{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:999px;background:var(--surface);
+  border:1px solid var(--border);box-shadow:var(--shadow);font-size:13.5px;color:var(--text2)}
+.rt-chip b{font-family:'Mitr';font-weight:600;color:var(--text);font-size:15px}
+.rt-chip i{width:9px;height:9px;border-radius:50%;display:inline-block}
+.rt-stage{position:relative;height:440px;perspective:1500px;perspective-origin:50% 0%;margin-top:4px;
+  border-radius:28px;overflow:hidden;
+  background:radial-gradient(1200px 380px at 50% 110%,rgba(116,92,233,.18),transparent 60%),
+             radial-gradient(700px 260px at 15% 0%,rgba(55,123,234,.10),transparent 60%),
+             linear-gradient(180deg,var(--surface),var(--soft));
+  border:1px solid var(--border);box-shadow:var(--shadow)}
+/* แท่นเอียง */
+.rt-plane{position:absolute;left:4%;right:4%;top:150px;height:200px;transform-style:preserve-3d;
+  transform:rotateX(58deg) rotateZ(-6deg);transform-origin:50% 50%}
+.rt-floor{position:absolute;inset:-30px -10px;border-radius:40px;
+  background:repeating-linear-gradient(90deg,rgba(116,92,233,.07) 0 1px,transparent 1px 48px),
+             repeating-linear-gradient(0deg,rgba(116,92,233,.07) 0 1px,transparent 1px 48px),
+             linear-gradient(135deg,rgba(116,92,233,.10),rgba(55,123,234,.06),rgba(236,72,153,.08));
+  background-size:auto,auto,300% 300%;animation:rtFlow 14s ease infinite;box-shadow:inset 0 0 0 1px rgba(116,92,233,.15)}
+/* เส้นทาง */
+.rt-path{position:absolute;left:0;right:0;top:50%;height:10px;margin-top:-5px;border-radius:8px;
+  background:linear-gradient(90deg,#745CE9,#377BEA,#14B8A6,#F59E0B,#EC4899,#745CE9);background-size:300% 100%;
+  animation:rtFlow 8s linear infinite;box-shadow:0 0 24px rgba(116,92,233,.45);opacity:.85}
+.rt-path::after{content:'';position:absolute;inset:0;border-radius:8px;
+  background:repeating-linear-gradient(90deg,rgba(255,255,255,.9) 0 10px,transparent 10px 34px);background-size:68px 100%;
+  animation:rtDash 1.2s linear infinite;mix-blend-mode:overlay}
+/* แท่งแต่ละขั้น */
+.rt-node{position:absolute;top:50%;width:70px;height:70px;margin:-35px 0 0 -35px;transform-style:preserve-3d;
+  animation:rtPulse var(--cycle) ease-in-out infinite;animation-delay:var(--delay)}
+.rt-face{position:absolute;inset:0;border-radius:16px}
+.rt-top{transform:translateZ(var(--hgt));background:linear-gradient(135deg,hsl(var(--h) 85% 64%),hsl(calc(var(--h) + 40) 85% 58%));
+  box-shadow:0 0 0 2px rgba(255,255,255,.55) inset;display:flex;align-items:center;justify-content:center;
+  font-family:'Mitr';font-weight:600;font-size:24px;color:#fff;text-shadow:0 2px 6px rgba(0,0,0,.25)}
+.rt-top svg{width:30px;height:30px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.rt-side{transform-origin:50% 100%;height:var(--hgt);top:auto;bottom:0;border-radius:0 0 12px 12px;
+  transform:rotateX(-90deg) translateZ(0);background:linear-gradient(180deg,hsl(var(--h) 70% 50%),hsl(var(--h) 70% 38%))}
+.rt-side2{transform-origin:100% 50%;width:var(--hgt);left:auto;right:0;border-radius:0 12px 12px 0;
+  transform:rotateY(90deg);background:linear-gradient(90deg,hsl(var(--h) 70% 44%),hsl(var(--h) 70% 32%))}
+.rt-glow{position:absolute;inset:-14px;border-radius:24px;background:radial-gradient(circle,hsla(var(--h),90%,60%,.55),transparent 70%);
+  opacity:0;animation:rtGlow var(--cycle) ease-in-out infinite;animation-delay:var(--delay)}
+/* ใบลาที่วิ่งไปตามเส้นทาง */
+.rt-orb{position:absolute;top:50%;width:26px;height:26px;margin:-13px 0 0 -13px;border-radius:50%;transform:translateZ(14px);
+  background:radial-gradient(circle at 35% 35%,#fff,#C9BEFF 40%,#745CE9 75%);box-shadow:0 0 18px 6px rgba(116,92,233,.6),0 0 40px 10px rgba(55,123,234,.35)}
+/* ป้ายข้อมูล ตั้งตรงหันหาผู้ชม */
+.rt-labels{position:absolute;inset:0;pointer-events:none}
+.rt-card{position:absolute;width:var(--cw);transform:translateX(-50%);top:var(--ly);pointer-events:auto;
+  background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:10px 12px;text-align:center;
+  box-shadow:0 14px 30px rgba(20,20,23,.10);animation:rtCard var(--cycle) ease-in-out infinite;animation-delay:var(--delay)}
+.rt-card::after{content:'';position:absolute;left:50%;bottom:-7px;width:12px;height:12px;margin-left:-6px;transform:rotate(45deg);
+  background:var(--surface);border-right:1px solid var(--border);border-bottom:1px solid var(--border)}
+.rt-card .n{display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:22px;padding:0 7px;border-radius:7px;font-size:12px;font-weight:700;color:#fff;
+  background:linear-gradient(135deg,hsl(var(--h) 85% 58%),hsl(calc(var(--h) + 40) 85% 52%));margin-bottom:4px}
+.rt-card b{display:block;font-family:'Mitr';font-weight:500;font-size:13px;line-height:1.35;color:var(--text)}
+.rt-card small{display:block;font-size:11.5px;color:var(--muted);margin-top:3px;line-height:1.45}
+.rt-card .opt{display:inline-block;font-size:10.5px;font-weight:700;color:#8A4B00;background:#FFF1DE;border-radius:999px;padding:0 7px;margin-top:3px}
+.rt-card .pend{color:#C62A6B;font-weight:700}
+.rt-card .avg{color:hsl(var(--h) 70% 40%);font-weight:700}
+:root[data-theme="dark"] .rt-card .avg{color:hsl(var(--h) 80% 70%)}
+@keyframes rtFlow{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+@keyframes rtDash{to{background-position:68px 0}}
+@keyframes rtPulse{0%,100%{transform:translateZ(0)}4%{transform:translateZ(26px)}12%{transform:translateZ(0)}}
+@keyframes rtGlow{0%,100%{opacity:0}4%{opacity:1}14%{opacity:0}}
+@keyframes rtCard{0%,100%{transform:translateX(-50%) translateY(0)}4%{transform:translateX(-50%) translateY(-8px);box-shadow:0 18px 36px rgba(116,92,233,.25)}12%{transform:translateX(-50%) translateY(0)}}
+/* รายการข้อความสำหรับโปรแกรมอ่านหน้าจอ */
+.rt-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+/* มือถือ: เส้นทางแนวตั้ง อ่านง่าย */
+@media(max-width:760px){
+  .rt-stage{height:auto;perspective:none;padding:18px 16px 18px 58px}
+  .rt-labels{position:relative;transform:none}
+  /* กรอบของเส้นและลูกแก้วครอบเต็มพื้นที่ เส้นจึงยาวตลอดรายการ */
+  .rt-plane{position:absolute;inset:0;height:auto;transform:none;transform-style:flat}
+  .rt-floor,.rt-node{display:none}
+  .rt-path{left:28px;right:auto;top:18px;bottom:18px;width:6px;height:auto;margin:0;
+    background:linear-gradient(180deg,#745CE9,#377BEA,#14B8A6,#F59E0B,#EC4899);background-size:100% 300%}
+  .rt-path::after{display:none}
+  .rt-orb{left:31px!important;top:18px;transform:none;margin:-13px 0 0 -13px}
+  .rt-labels{display:flex;flex-direction:column;gap:12px}
+  .rt-card{position:relative;transform:none!important;left:auto!important;top:auto!important;width:auto;text-align:left;animation:none}
+  .rt-card::after{display:none}
+  .rt-card::before{content:'';position:absolute;left:-36px;top:14px;width:16px;height:16px;border-radius:50%;
+    background:linear-gradient(135deg,hsl(var(--h) 85% 58%),hsl(calc(var(--h) + 40) 85% 52%));box-shadow:0 0 0 4px var(--surface)}
+}
+@media(prefers-reduced-motion:reduce){.rt-node,.rt-glow,.rt-card,.rt-path,.rt-path::after,.rt-floor{animation:none!important}.rt-orb{display:none}}
 </style>
 </head>
 <body>
@@ -1022,6 +1110,21 @@ footer{border-top:1px solid var(--border);background:var(--surface);margin-top:4
     </div>
 
     <div class="grid c4" id="kpiCards" style="margin-top:16px"></div>
+  </section>
+
+  <!-- เส้นทางการกำกับติดตามใบลา (ภาพ 3 มิติเคลื่อนไหว พร้อมข้อมูลจริงของแต่ละขั้น) -->
+  <section id="route">
+    <div class="sec-head">
+      <span class="sec-ic g-pu"><svg viewBox="0 0 24 24"><circle cx="5" cy="18" r="2.2"/><circle cx="19" cy="6" r="2.2"/><path d="M7 18h6a4 4 0 0 0 0-8h-2a4 4 0 0 1 0-8h6"/></svg></span>
+      <h2>เส้นทางการกำกับติดตามใบลา</h2>
+    </div>
+    <p class="rt-lead">ใบลาทุกฉบับเดินทางผ่านผู้พิจารณาตามลำดับขั้น ระบบส่งต่อและแจ้งเตือนให้อัตโนมัติ
+      ตัวเลขในแต่ละขั้นคือข้อมูลจริง ได้แก่ จำนวนที่กำลังรอพิจารณา และเวลาเฉลี่ยที่ขั้นนั้นใช้ (ย้อนหลัง 1 ปี)</p>
+    <div class="rt-chips" id="rtChips"></div>
+    <div class="rt-stage" id="rtStage" aria-label="ภาพเส้นทางการพิจารณาใบลา">
+      <div class="sk sk-line" style="width:100%;height:320px"></div>
+    </div>
+    <ol class="rt-sr" id="rtList"></ol>
   </section>
 
 </main>
@@ -1408,6 +1511,8 @@ function render(d){
   applyAppUrl();
   if(d.feedback) paintRateStat(d.feedback);
   if(d.stat) renderKpi(d);
+  window.__lastData=d;
+  try{ renderRoute(d); }catch(e){}
   if(d.calendar) initCalendar(d);
   $('asOf').textContent = thDate(d.today);
   if(d.updatedAt){
@@ -2191,6 +2296,92 @@ initTheme();
 initCalFind();
 initGate();
 loadData();
+
+/* =================================================================
+   เส้นทางการกำกับติดตามใบลา
+   ข้อมูลจาก d.route (เซิร์ฟเวอร์คำนวณ): ลำดับขั้นจริง จำนวนที่ค้าง และเวลาเฉลี่ยของแต่ละขั้น
+   ================================================================= */
+function fmtHours(h){
+  if(h===null||h===undefined) return '—';
+  h=Number(h)||0;
+  if(h<1) return Math.max(1,Math.round(h*60))+' นาที';
+  if(h<48) return (Math.round(h*10)/10)+' ชม.';
+  return (Math.round(h/24*10)/10)+' วัน';
+}
+function renderRoute(d){
+  var st=document.getElementById('rtStage'); if(!st) return;
+  var r=d.route||{};
+  var steps=(r.steps&&r.steps.length)?r.steps:[
+    {title:'หัวหน้ากลุ่มงาน',optional:true},{title:'หัวหน้าสำนักงานเลขานุการคณบดี / หัวหน้าสำนักวิชาวิศวกรรมศาสตร์'},
+    {title:'ผู้บริหารที่กำกับดูแล',optional:true},{title:'คณบดีคณะวิศวกรรมศาสตร์'}];
+  var pendTotal=steps.reduce(function(a,s){ return a+(Number(s.pending)||0); },0);
+  var nodes=[{kind:'start',title:'ยื่นใบลาออนไลน์',sub:'แนบเอกสาร • ได้รับ QR ติดตามทางอีเมล'}]
+    .concat(steps.map(function(s,i){ return {kind:'step',no:i+1,title:s.title,optional:s.optional,pending:Number(s.pending)||0,avg:s.avgHours,passed:s.passed||0,skipped:s.skipped||0}; }))
+    .concat([{kind:'end',title:'แจ้งผลอัตโนมัติ',sub:'อีเมลถึงผู้ยื่น • สแกน QR ดูสถานะได้ตลอด'}]);
+  var n=nodes.length, seg=1.5, cycle=(n+1)*seg;
+  var chips=document.getElementById('rtChips');
+  if(chips){
+    chips.innerHTML=
+      '<span class="rt-chip"><i style="background:#745CE9"></i>ลำดับการพิจารณา <b>'+steps.length+' ขั้น</b></span>'+
+      '<span class="rt-chip"><i style="background:#EC4899"></i>กำลังรอพิจารณา <b>'+num(pendTotal)+' เรื่อง</b></span>'+
+      (r.finished?'<span class="rt-chip"><i style="background:#14B8A6"></i>พิจารณาเสร็จแล้ว <b>'+num(r.finished)+' เรื่อง</b></span>':'')+
+      (r.avgTotalHours!=null?'<span class="rt-chip"><i style="background:#F59E0B"></i>เวลาเฉลี่ยตั้งแต่ยื่นจนได้ผล <b>'+fmtHours(r.avgTotalHours)+'</b></span>':'');
+  }
+  var ICON_START='<svg viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M12 18v-6M9 15l3-3 3 3"/></svg>';
+  var ICON_END='<svg viewBox="0 0 24 24"><path d="M4 6h16v12H4z"/><path d="m4 7 8 6 8-6"/></svg>';
+  var cw=Math.max(118,Math.min(170,Math.floor((st.clientWidth||900)*0.92/n)-10));
+  var plane='', labels='';
+  nodes.forEach(function(nd,i){
+    var x=((i+0.5)/n*100), hue=(250+i*(300/Math.max(1,n-1)))%360;
+    var delay=(i*seg)+'s', hgt=(nd.kind==='step'?22+Math.min(30,nd.pending*6):16)+'px';
+    var face = nd.kind==='start'?ICON_START:(nd.kind==='end'?ICON_END:String(nd.no));
+    plane+='<div class="rt-node" style="left:'+x+'%;--h:'+hue+';--hgt:'+hgt+';--delay:'+delay+';--cycle:'+cycle+'s">'+
+      '<div class="rt-glow"></div><div class="rt-face rt-side"></div><div class="rt-face rt-side2"></div>'+
+      '<div class="rt-face rt-top">'+face+'</div></div>';
+    var info = nd.kind==='step'
+      ? ((nd.pending?'<small class="pend">รอพิจารณา '+num(nd.pending)+' เรื่อง</small>':'<small>ไม่มีเรื่องค้าง</small>')+
+         '<small>เฉลี่ย <span class="avg">'+fmtHours(nd.avg)+'</span>'+(nd.passed?' • ผ่านแล้ว '+num(nd.passed):'')+'</small>'+
+         (nd.optional?'<span class="opt">ข้ามได้'+(nd.skipped?' • ข้ามแล้ว '+num(nd.skipped):'')+'</span>':''))
+      : '<small>'+esc(nd.sub)+'</small>';
+    /* ป้ายเรียงสูงต่ำสลับกัน ไม่ให้ทับกันบนจอแคบ */
+    var ly=(i%2===0)?14:(nd.kind==='step'&&nd.optional?28:34);
+    labels+='<div class="rt-card" style="left:'+(4+x*0.92)+'%;--cw:'+cw+'px;--ly:'+ly+'px;--h:'+hue+';--delay:'+delay+';--cycle:'+cycle+'s">'+
+      (nd.kind==='step'?'<span class="n">'+nd.no+'</span>':'<span class="n">'+(nd.kind==='start'?'เริ่ม':'จบ')+'</span>')+
+      '<b>'+esc(nd.title)+'</b>'+info+'</div>';
+  });
+  st.innerHTML='<div class="rt-plane"><div class="rt-floor"></div><div class="rt-path"></div>'+plane+'<div class="rt-orb" id="rtOrb"></div></div>'+
+    '<div class="rt-labels">'+labels+'</div>';
+  /* ลูกแก้ว "ใบลา" วิ่งผ่านทีละขั้น ตรงจังหวะกับแท่งที่ยกตัว */
+  var orb=document.getElementById('rtOrb');
+  var mobile=window.matchMedia('(max-width:760px)').matches;
+  /* ป้ายวางตรงเหนือแท่งจริงบนจอ (แท่นเอียงทำให้ตำแหน่งบนจอต่างจากตำแหน่งบนแท่น) */
+  if(!mobile){
+    var sr=st.getBoundingClientRect(), tops=st.querySelectorAll('.rt-top'), cards2=st.querySelectorAll('.rt-card');
+    tops.forEach(function(t,i){
+      var b=t.getBoundingClientRect(), cx=b.left+b.width/2-sr.left;
+      var half=cw/2+6; cx=Math.max(half,Math.min(sr.width-half,cx));
+      if(cards2[i]) cards2[i].style.left=cx+'px';
+    });
+  }
+  var reduce=window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+  if(orb && orb.animate && !reduce){
+    var frames=[];
+    if(mobile){
+      var cards=st.querySelectorAll('.rt-card'), base=st.getBoundingClientRect().top;
+      nodes.forEach(function(_,i){ var c=cards[i].getBoundingClientRect(); frames.push({top:(c.top-base+22)+'px',offset:i/(n+1)}); });
+      frames.push({top:frames[frames.length-1].top,offset:1});
+    }else{
+      nodes.forEach(function(_,i){ frames.push({left:((i+0.5)/n*100)+'%',offset:i/(n+1)}); });
+      frames.push({left:((n-0.5)/n*100)+'%',offset:n/(n+1)});
+      frames.push({left:((n-0.5)/n*100)+'%',opacity:0,offset:1});
+      frames[0].opacity=1;
+    }
+    orb.animate(frames,{duration:cycle*1000,iterations:Infinity,easing:'ease-in-out'});
+  }
+  var list=document.getElementById('rtList');
+  if(list) list.innerHTML=nodes.map(function(nd){ return '<li>'+esc(nd.title)+(nd.kind==='step'?(' — รอพิจารณา '+nd.pending+' เรื่อง เฉลี่ย '+fmtHours(nd.avg)):'')+'</li>'; }).join('');
+}
+window.addEventListener('resize',function(){ clearTimeout(window.__rtT); window.__rtT=setTimeout(function(){ if(window.__lastData) try{ renderRoute(window.__lastData); }catch(e){} },300); });
 </script>
 </body>
 </html>

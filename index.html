@@ -775,7 +775,12 @@ footer{border-top:1px solid var(--border);background:var(--surface);margin-top:4
   background:linear-gradient(135deg,hsl(var(--h) 85% 58%),hsl(calc(var(--h) + 40) 85% 52%));margin-bottom:4px}
 .rt-card b{display:block;font-family:'Mitr';font-weight:500;font-size:13px;line-height:1.35;color:var(--text)}
 .rt-card small{display:block;font-size:11.5px;color:var(--muted);margin-top:3px;line-height:1.45}
-.rt-card .opt{display:inline-block;font-size:10.5px;font-weight:700;color:#8A4B00;background:#FFF1DE;border-radius:999px;padding:0 7px;margin-top:3px}
+.rt-card{cursor:pointer}
+.rt-card:hover{border-color:hsl(var(--h) 70% 60%);box-shadow:0 18px 36px rgba(116,92,233,.22)}
+.rt-card:focus-visible{outline:3px solid hsl(var(--h) 80% 60%);outline-offset:2px}
+.rt-card .rt-more{display:block;margin-top:5px;font-size:11px;font-weight:700;color:hsl(var(--h) 70% 45%)}
+:root[data-theme="dark"] .rt-card .rt-more{color:hsl(var(--h) 80% 72%)}
+.rt-node{cursor:pointer}
 .rt-card .pend{color:#C62A6B;font-weight:700}
 .rt-card .avg{color:hsl(var(--h) 70% 40%);font-weight:700}
 :root[data-theme="dark"] .rt-card .avg{color:hsl(var(--h) 80% 70%)}
@@ -2311,12 +2316,21 @@ function fmtHours(h){
 function renderRoute(d){
   var st=document.getElementById('rtStage'); if(!st) return;
   var r=d.route||{};
-  var steps=(r.steps&&r.steps.length)?r.steps:[
-    {title:'หัวหน้ากลุ่มงาน',optional:true},{title:'หัวหน้าสำนักงานเลขานุการคณบดี / หัวหน้าสำนักวิชาวิศวกรรมศาสตร์'},
-    {title:'ผู้บริหารที่กำกับดูแล',optional:true},{title:'คณบดีคณะวิศวกรรมศาสตร์'}];
-  var pendTotal=steps.reduce(function(a,s){ return a+(Number(s.pending)||0); },0);
+  var steps;
+  if(r.steps&&r.steps.length){ steps=r.steps; }
+  else{
+    /* ยังไม่มีข้อมูลรายขั้นจากเซิร์ฟเวอร์ ใช้จำนวนที่ค้างแต่ละขั้นที่มีอยู่แล้วไปก่อน */
+    var pbs=d.pendingByStep||{};
+    var base=['หัวหน้ากลุ่มงาน','หัวหน้าสำนักงานเลขานุการคณบดี','ผู้บริหารที่กำกับดูแล','คณบดีคณะวิศวกรรมศาสตร์'];
+    Object.keys(pbs).forEach(function(k){ if(base.indexOf(k)<0 && k!=='รอดำเนินการ') base.push(k); });
+    steps=base.map(function(t){ return {title:t,pending:Number(pbs[t])||0,avgHours:null}; });
+  }
+  ROUTE={d:d,r:r,steps:steps};
+  var pendTotal=Math.max(steps.reduce(function(a,s){ return a+(Number(s.pending)||0); },0), Number(d.pendingCount)||0);
+  var stt=d.stat||{};
+  if(!r.finished && (stt.approved||stt.rejected)) r.finished=(Number(stt.approved)||0)+(Number(stt.rejected)||0);
   var nodes=[{kind:'start',title:'ยื่นใบลาออนไลน์',sub:'แนบเอกสาร • ได้รับ QR ติดตามทางอีเมล'}]
-    .concat(steps.map(function(s,i){ return {kind:'step',no:i+1,title:s.title,optional:s.optional,pending:Number(s.pending)||0,avg:s.avgHours,passed:s.passed||0,skipped:s.skipped||0}; }))
+    .concat(steps.map(function(s,i){ return {kind:'step',no:i+1,title:s.title,pending:Number(s.pending)||0,avg:s.avgHours,passed:s.passed||0}; }))
     .concat([{kind:'end',title:'แจ้งผลอัตโนมัติ',sub:'อีเมลถึงผู้ยื่น • สแกน QR ดูสถานะได้ตลอด'}]);
   var n=nodes.length, seg=1.5, cycle=(n+1)*seg;
   var chips=document.getElementById('rtChips');
@@ -2335,20 +2349,21 @@ function renderRoute(d){
     var x=((i+0.5)/n*100), hue=(250+i*(300/Math.max(1,n-1)))%360;
     var delay=(i*seg)+'s', hgt=(nd.kind==='step'?22+Math.min(30,nd.pending*6):16)+'px';
     var face = nd.kind==='start'?ICON_START:(nd.kind==='end'?ICON_END:String(nd.no));
-    plane+='<div class="rt-node" style="left:'+x+'%;--h:'+hue+';--hgt:'+hgt+';--delay:'+delay+';--cycle:'+cycle+'s">'+
+    plane+='<div class="rt-node" data-i="'+i+'" style="left:'+x+'%;--h:'+hue+';--hgt:'+hgt+';--delay:'+delay+';--cycle:'+cycle+'s">'+
       '<div class="rt-glow"></div><div class="rt-face rt-side"></div><div class="rt-face rt-side2"></div>'+
       '<div class="rt-face rt-top">'+face+'</div></div>';
     var info = nd.kind==='step'
       ? ((nd.pending?'<small class="pend">รอพิจารณา '+num(nd.pending)+' เรื่อง</small>':'<small>ไม่มีเรื่องค้าง</small>')+
-         '<small>เฉลี่ย <span class="avg">'+fmtHours(nd.avg)+'</span>'+(nd.passed?' • ผ่านแล้ว '+num(nd.passed):'')+'</small>'+
-         (nd.optional?'<span class="opt">ข้ามได้'+(nd.skipped?' • ข้ามแล้ว '+num(nd.skipped):'')+'</span>':''))
+         '<small>ใช้เวลาเฉลี่ย <span class="avg">'+fmtHours(nd.avg)+'</span></small>'+
+         (nd.passed?'<small>พิจารณาแล้ว '+num(nd.passed)+' เรื่อง</small>':''))
       : '<small>'+esc(nd.sub)+'</small>';
     /* ป้ายเรียงสูงต่ำสลับกัน ไม่ให้ทับกันบนจอแคบ */
-    var ly=(i%2===0)?14:(nd.kind==='step'&&nd.optional?28:34);
-    labels+='<div class="rt-card" style="left:'+(4+x*0.92)+'%;--cw:'+cw+'px;--ly:'+ly+'px;--h:'+hue+';--delay:'+delay+';--cycle:'+cycle+'s">'+
+    var ly=(i%2===0)?14:34;
+    labels+='<div class="rt-card" role="button" tabindex="0" data-i="'+i+'" title="กดเพื่อดูรายละเอียด" style="left:'+(4+x*0.92)+'%;--cw:'+cw+'px;--ly:'+ly+'px;--h:'+hue+';--delay:'+delay+';--cycle:'+cycle+'s">'+
       (nd.kind==='step'?'<span class="n">'+nd.no+'</span>':'<span class="n">'+(nd.kind==='start'?'เริ่ม':'จบ')+'</span>')+
-      '<b>'+esc(nd.title)+'</b>'+info+'</div>';
+      '<b>'+esc(nd.title)+'</b>'+info+'<span class="rt-more">ดูรายละเอียด ›</span></div>';
   });
+  ROUTE.nodes=nodes;
   st.innerHTML='<div class="rt-plane"><div class="rt-floor"></div><div class="rt-path"></div>'+plane+'<div class="rt-orb" id="rtOrb"></div></div>'+
     '<div class="rt-labels">'+labels+'</div>';
   /* ลูกแก้ว "ใบลา" วิ่งผ่านทีละขั้น ตรงจังหวะกับแท่งที่ยกตัว */
@@ -2378,10 +2393,55 @@ function renderRoute(d){
     }
     orb.animate(frames,{duration:cycle*1000,iterations:Infinity,easing:'ease-in-out'});
   }
+  /* กดหรือกด Enter ที่ป้าย/แท่ง เปิดหน้าต่างรายละเอียด */
+  st.onclick=function(e){ var t=e.target.closest('[data-i]'); if(t) openRouteInfo(Number(t.getAttribute('data-i'))); };
+  st.onkeydown=function(e){ if((e.key==='Enter'||e.key===' ')&&e.target.getAttribute('data-i')!==null){ e.preventDefault(); openRouteInfo(Number(e.target.getAttribute('data-i'))); } };
   var list=document.getElementById('rtList');
   if(list) list.innerHTML=nodes.map(function(nd){ return '<li>'+esc(nd.title)+(nd.kind==='step'?(' — รอพิจารณา '+nd.pending+' เรื่อง เฉลี่ย '+fmtHours(nd.avg)):'')+'</li>'; }).join('');
 }
 window.addEventListener('resize',function(){ clearTimeout(window.__rtT); window.__rtT=setTimeout(function(){ if(window.__lastData) try{ renderRoute(window.__lastData); }catch(e){} },300); });
+
+var ROUTE=null;
+function openRouteInfo(i){
+  if(!ROUTE||!ROUTE.nodes) return;
+  var nd=ROUTE.nodes[i], r=ROUTE.r||{}, d=ROUTE.d||{}, h='', title='', big='', sub='';
+  var groups=d.groups||['สายวิชาการ','สายสนับสนุน'];
+  var tile2=function(a,al,b,bl){ return '<div class="dd-sum"><div class="dd-a"><span>'+a+'</span><small>'+al+'</small></div><div class="dd-p"><span>'+b+'</span><small>'+bl+'</small></div></div>'; };
+  if(nd.kind==='start'){
+    var st=r.start||{};
+    title='ยื่นใบลาออนไลน์'; sub='จุดเริ่มต้นของทุกเรื่อง ใช้งานได้ทั้งคอมพิวเตอร์และมือถือ';
+    big=num(st.submitted365!=null?st.submitted365:((d.stat||{}).total||0))+' <small>เรื่อง</small>';
+    h+=tile2(num(st.submitted30||0),'ยื่นใน 30 วันที่ผ่านมา',num(st.submitted365!=null?st.submitted365:((d.stat||{}).total||0)),'ยื่นในรอบ 1 ปี');
+    if(st.byType) h+='<div class="dd-sec"><h4>ยื่นในรอบ 1 ปี แยกตามประเภทการลา</h4>'+infoTiles(st.byType,typeToneOf)+'</div>';
+    if(st.byGroup) h+='<div class="dd-sec"><h4>แยกตามสายงาน</h4>'+infoTiles(st.byGroup,groupToneOf,groups)+'</div>';
+    h+='<div class="dd-sec"><h4>ขั้นตอนนี้ทำอะไร</h4><p class="dd-note" style="text-align:left">บุคลากรกรอกใบลา แนบเอกสาร แล้วกดส่ง ระบบตรวจสิทธิคงเหลือให้ทันที '+
+       'ส่งอีเมลยืนยันพร้อม QR ติดตามสถานะ และแจ้งผู้พิจารณาขั้นแรกอัตโนมัติ</p></div>';
+  }else if(nd.kind==='end'){
+    var en=r.end||{};
+    title='แจ้งผลอัตโนมัติ'; sub='เมื่อพิจารณาครบทุกขั้น ระบบแจ้งผลทางอีเมลทันที';
+    big=num(en.finished!=null?en.finished:(r.finished||0))+' <small>เรื่อง</small>';
+    h+=tile2(num(en.approved!=null?en.approved:((d.stat||{}).approved||0)),'อนุมัติ',num(en.rejected!=null?en.rejected:((d.stat||{}).rejected||0)),'ไม่อนุมัติ');
+    if(en.avgTotalHours!=null||en.within1dRate!=null)
+      h+=tile2(fmtHours(en.avgTotalHours),'เวลาเฉลี่ยตั้งแต่ยื่นจนได้ผล',(en.within1dRate!=null?en.within1dRate+'%':'—'),'ได้ผลภายใน 1 วัน');
+    h+='<div class="dd-sec"><h4>ขั้นตอนนี้ทำอะไร</h4><p class="dd-note" style="text-align:left">ผู้ยื่นได้รับอีเมลแจ้งผล และสแกน QR ในอีเมลเพื่อดูความคืบหน้าและผลของแต่ละขั้นได้ตลอดเวลา '+
+       'โดยไม่ต้องเข้าสู่ระบบ</p></div>';
+  }else{
+    var s=(ROUTE.steps||[])[nd.no-1]||{};
+    title='ขั้นที่ '+nd.no+' • '+nd.title; sub='ผู้พิจารณาลงนามผ่านระบบ ระบบส่งต่อขั้นถัดไปให้อัตโนมัติ';
+    big=num(s.pending||0)+' <small>รอพิจารณา</small>';
+    h+=tile2(fmtHours(s.avgHours),'ใช้เวลาพิจารณาเฉลี่ย',(s.passed!=null?num(s.passed):'—'),'พิจารณาแล้ว (1 ปี)');
+    if(s.wait&&s.pending) h+='<div class="dd-sec"><h4>เรื่องที่รออยู่ รอมานานเท่าไร</h4>'+infoTiles(s.wait,function(k){ return k==='เกิน 3 วัน'?'tn-pk':(k==='1–3 วัน'?'tn-o':'tn-gr'); },['ไม่เกิน 1 วัน','1–3 วัน','เกิน 3 วัน'])+
+       (s.oldestDays!=null?'<p class="dd-note">เรื่องที่รอนานที่สุดรอมาแล้ว '+fmtHours(s.oldestDays*24)+'</p>':'')+'</div>';
+    if(s.byType&&s.pending) h+='<div class="dd-sec"><h4>เรื่องที่รออยู่ แยกตามประเภทการลา</h4>'+infoTiles(s.byType,typeToneOf)+'</div>';
+    if(s.byGroup&&s.pending) h+='<div class="dd-sec"><h4>เรื่องที่รออยู่ แยกตามสายงาน</h4>'+infoTiles(s.byGroup,groupToneOf,groups)+'</div>';
+    if(s.decided30!=null||s.rejected!=null) h+=tile2(num(s.decided30||0),'พิจารณาใน 30 วันที่ผ่านมา',num(s.rejected||0),'ไม่อนุมัติ (1 ปี)');
+    if(!s.pending) h+='<p class="dd-note">ขณะนี้ไม่มีเรื่องรอพิจารณาที่ขั้นนี้</p>';
+  }
+  h='<div class="dd-head"><div><b>'+esc(title)+'</b><small>'+esc(sub)+'</small></div><span class="dd-total">'+big+'</span></div>'+h+
+    '<p class="dd-note">แสดงเฉพาะจำนวนรวม ไม่แสดงชื่อ เลขที่ใบลา วันที่ลา หรือเหตุผลการลา (เป็นไปตาม พ.ร.บ.คุ้มครองข้อมูลส่วนบุคคล) • ข้อมูล ณ '+esc(thDate(d.today||''))+'</p>';
+  $('ddBody').innerHTML=h;
+  $('dayDlg').hidden=false;
+}
 </script>
 </body>
 </html>

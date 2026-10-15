@@ -1186,6 +1186,16 @@ footer{border-top:1px solid var(--border);background:var(--surface);margin-top:4
    ที่อยู่ของระบบหลัง — แก้บรรทัดเดียวนี้เมื่อ Deploy ใหม่แล้ว URL เปลี่ยน
    =================================================================== */
 var APP_URL = 'https://script.google.com/macros/s/AKfycbzn6b1edfqUSLRn-v320rQafQaY2Nycnjq72hCgaP42Q0mDZQGgvV8FC9LovAVso3fNpw/exec';
+/* หลังย้ายระบบไปบัญชีใหม่ ลิงก์ระบบจะเปลี่ยน หน้านี้รับลิงก์ล่าสุดจากข้อมูลที่ระบบส่งมา (systemUrl)
+   แล้วจำไว้ใช้ครั้งต่อไป จึงไม่ต้องกลับมาแก้ไฟล์นี้ */
+function validExecUrl(u){ return /^https:\/\/script\.google\.com\/(a\/macros\/[^\/]+|macros)\/s\/[\w-]+\/exec$/.test(String(u||'')); }
+(function(){ try{ var u=localStorage.getItem('lv_app_url'); if(validExecUrl(u)) APP_URL=u; }catch(e){} })();
+function adoptSystemUrl(d){
+  if(d && validExecUrl(d.systemUrl) && d.systemUrl!==APP_URL){
+    APP_URL=d.systemUrl;
+    try{ localStorage.setItem('lv_app_url', APP_URL); }catch(e){}
+  }
+}
 
 /* ===================================================================
    ที่อยู่ไฟล์ข้อมูลสาธารณะ (แนะนำให้ตั้ง)
@@ -1517,6 +1527,7 @@ function render(d){
   if(d.feedback) paintRateStat(d.feedback);
   if(d.stat) renderKpi(d);
   window.__lastData=d;
+  adoptSystemUrl(d);
   try{ renderRoute(d); }catch(e){}
   if(d.calendar) initCalendar(d);
   $('asOf').textContent = thDate(d.today);

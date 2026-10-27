@@ -1434,6 +1434,14 @@ function setSyncBusy(on){
   b.querySelector('b').textContent = on ? 'กำลังซิงก์…' : 'ซิงก์ข้อมูลล่าสุด';
 }
 
+/** ข้อมูลนี้สร้างไว้นานกี่นาทีแล้ว (จาก cachedAt "YYYY-MM-DD HH:mm:ss") ไม่มีเวลา = ถือว่าใหม่ */
+function dataAgeMin(d){
+  var m=String((d&&d.cachedAt)||'').match(/(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})/);
+  if(!m) return 0;
+  var t=new Date(+m[1],+m[2]-1,+m[3],+m[4],+m[5]).getTime();
+  return Math.max(0,(Date.now()-t)/60000);
+}
+
 function loadData(manual){
   setSyncBusy(true);
 
@@ -1445,12 +1453,26 @@ function loadData(manual){
     callApi('publicData=1', function(d){ afterLoad(d, manual, 'api'); },
             function(msg){ afterFail(msg); });
   };
+  /* ข้อมูลจากไฟล์เก่าเกิน 20 นาที (ระบบสร้างข้อมูลไม่ทัน หรือเขียนไฟล์ไม่สำเร็จ)
+     แสดงที่ได้ไปก่อน แล้วดึงข้อมูลสดจากระบบโดยตรงมาแทนเงียบ ๆ หน้าเว็บจึงไม่ค้างข้อมูลเก่า */
+  var useOrRefresh = function(d, src){
+    afterLoad(d, manual, src);
+    if(d && d.ok && dataAgeMin(d) > 20){
+      callApi('publicData=1', function(f){ if(f && f.ok) afterLoad(f, false, 'api'); }, function(){});
+    }
+  };
   var viaFeed = function(){
     if(!FEED_URL || !window.fetch){ viaApi(); return; }
-    loadFeed(function(d){ afterLoad(d, manual, 'feed'); }, viaApi);
+    loadFeed(function(d){ useOrRefresh(d, 'feed'); }, viaApi);
   };
+  /* กดปุ่ม "ซิงก์ข้อมูลล่าสุด": ดึงข้อมูลสดจากระบบโดยตรงก่อนเสมอ ไม่ได้ค่อยใช้ไฟล์ */
+  if(manual){
+    callApi('publicData=1', function(d){ if(d && d.ok) afterLoad(d, manual, 'api'); else loadFeed(function(x){ afterLoad(x, manual, 'live'); }, viaFeed, 12000, liveUrl()); },
+            function(){ if(LIVE_SHEET_ID && window.fetch) loadFeed(function(x){ afterLoad(x, manual, 'live'); }, viaFeed, 12000, liveUrl()); else viaFeed(); }, 25000);
+    return;
+  }
   if(LIVE_SHEET_ID && window.fetch){
-    loadFeed(function(d){ afterLoad(d, manual, 'live'); }, viaFeed, 12000, liveUrl());
+    loadFeed(function(d){ useOrRefresh(d, 'live'); }, viaFeed, 12000, liveUrl());
     return;
   }
   if(FEED_URL && window.fetch){ viaFeed(); return; }

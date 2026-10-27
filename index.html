@@ -29,6 +29,14 @@
 html,body,body *:not(code):not(pre):not(kbd):not(samp),
 input,button,select,textarea,option,svg text{font-family:var(--msu-font)!important;font-synthesis:none;}
 code,pre,kbd,samp{font-family:ui-monospace,SFMono-Regular,Consolas,monospace!important;}
+
+/* ป้ายสถานะความสดของข้อมูล */
+.stale-note{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;font-size:13px;font-weight:600;
+  background:#EEF4FF;color:#1F4FA8;border:1px solid #C9DBFF}
+.stale-note::before{content:'';width:8px;height:8px;border-radius:50%;background:#377BEA;animation:snPulse 1s ease-in-out infinite}
+.stale-note.old{background:#FFF4E5;color:#8A4B00;border-color:#F3D2A2}
+.stale-note.old::before{background:#E08A1E;animation:none}
+@keyframes snPulse{0%,100%{opacity:1}50%{opacity:.3}}
 </style>
 <script>
 /* โหลดฟอนต์มอน้ำชีไม่สำเร็จภายใน 4 วินาที (เช่น เครือข่ายขัดข้อง) ใช้ฟอนต์สำรอง Sarabun จาก Google Fonts */
@@ -1434,53 +1442,82 @@ function setSyncBusy(on){
   b.querySelector('b').textContent = on ? 'กำลังซิงก์…' : 'ซิงก์ข้อมูลล่าสุด';
 }
 
-/** ข้อมูลนี้สร้างไว้นานกี่นาทีแล้ว (จาก cachedAt "YYYY-MM-DD HH:mm:ss") ไม่มีเวลา = ถือว่าใหม่ */
-function dataAgeMin(d){
-  var m=String((d&&d.cachedAt)||'').match(/(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})/);
-  if(!m) return 0;
-  var t=new Date(+m[1],+m[2]-1,+m[3],+m[4],+m[5]).getTime();
-  return Math.max(0,(Date.now()-t)/60000);
+
+/* =====================================================================
+   ลำดับการดึงข้อมูล — ยึดหลัก "ไม่แสดงข้อมูลเก่า ถ้าหาข้อมูลใหม่ได้"
+   ---------------------------------------------------------------------
+   1) ไฟล์ข้อมูลหน้าสาธารณะ (เร็วที่สุด) ใช้ได้เฉพาะเมื่อสร้างไว้ไม่เกิน 15 นาที
+   2) ไฟล์เก่ากว่านั้น → ไม่แสดง ไปดึงข้อมูลสดจากระบบโดยตรงแทน
+      และจำไว้ 30 นาทีว่าไฟล์ค้าง รอบถัดไปดึงจากระบบโดยตรงเลย ไม่เสียเวลาอ่านไฟล์
+   3) ระบบโดยตรงเชื่อมต่อไม่ได้จริง ๆ → แสดงข้อมูลจากไฟล์ พร้อมป้ายบอกชัดว่าเป็นข้อมูลเมื่อไร
+   และไม่ย้อนกลับไปแสดงข้อมูลที่เก่ากว่าชุดที่แสดงอยู่ (เดิมรีเฟรชทุก 2 นาทีแล้วข้อมูลเก่าโผล่สลับไปมา)
+   ===================================================================== */
+var STALE_MIN = 15;
+var FILE_STALE_UNTIL = 0;
+var SHOWN_MS = 0;
+
+function stampMs(d){
+  var m=String((d&&(d.cachedAt||d.updatedAt))||'').match(/(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})(?::(\d{2}))?/);
+  return m ? new Date(+m[1],+m[2]-1,+m[3],+m[4],+m[5],+(m[6]||0)).getTime() : 0;
+}
+/** ข้อมูลนี้สร้างไว้นานกี่นาทีแล้ว ไม่มีเวลา = ถือว่าใหม่ */
+function dataAgeMin(d){ var t=stampMs(d); return t ? Math.max(0,(Date.now()-t)/60000) : 0; }
+
+/** อ่านไฟล์ข้อมูลหน้าสาธารณะ: ไฟล์แยกแบบสดก่อน ไม่ได้ค่อยใช้ไฟล์ที่เผยแพร่ไปยังเว็บ */
+function loadFile(onDone, onFail){
+  if(!window.fetch || (!LIVE_SHEET_ID && !FEED_URL)){ onFail(); return; }
+  var viaFeed=function(){ if(FEED_URL) loadFeed(onDone, onFail, 12000); else onFail(); };
+  if(LIVE_SHEET_ID) loadFeed(onDone, viaFeed, 12000, liveUrl()); else viaFeed();
 }
 
 function loadData(manual){
   setSyncBusy(true);
+  var fileData=null;
+  var done=function(d, src, staleFallback){ showData(d, manual, src, staleFallback); };
+  var fromApi=function(onFail){
+    callApi('publicData=1', function(d){ if(d && d.ok) done(d,'api'); else onFail(d); }, function(e){ onFail(e); }, 25000);
+  };
+  var apiThenFile=function(){
+    fromApi(function(err){
+      if(fileData && fileData.ok){ done(fileData,'live',dataAgeMin(fileData)>STALE_MIN); return; }
+      loadFile(function(d){ done(d,'live',dataAgeMin(d)>STALE_MIN); }, function(){ afterFail(err && err.error ? err.error : err); });
+    });
+  };
+  /* กดซิงก์เอง หรือรู้อยู่แล้วว่าไฟล์ค้าง: ดึงจากระบบโดยตรง */
+  if(manual || Date.now() < FILE_STALE_UNTIL){ apiThenFile(); return; }
+  loadFile(function(d){
+    if(d && d.ok && dataAgeMin(d) <= STALE_MIN){ done(d,'live'); return; }
+    /* ไฟล์ค้าง: ไม่แสดงข้อมูลเก่า ไปดึงข้อมูลสดก่อน */
+    fileData=d; FILE_STALE_UNTIL=Date.now()+30*60000;
+    setStaleNote('loading');
+    apiThenFile();
+  }, apiThenFile);
+}
 
-  /* ลำดับการดึงข้อมูล เรียงจากสดที่สุดไปหาสำรอง
-     1) ไฟล์สาธารณะแยก อ่านแบบสด — ได้ค่าปัจจุบันทันที
-     2) ไฟล์ที่เผยแพร่ไปยังเว็บ    — ไม่ผูกบัญชี แต่ช้ากว่าราว 5 นาที
-     3) Apps Script โดยตรง        — ทางสุดท้าย เครื่องที่ลงชื่อหลายบัญชีอาจใช้ไม่ได้ */
-  var viaApi = function(){
-    callApi('publicData=1', function(d){ afterLoad(d, manual, 'api'); },
-            function(msg){ afterFail(msg); });
-  };
-  /* ข้อมูลจากไฟล์เก่าเกิน 20 นาที (ระบบสร้างข้อมูลไม่ทัน หรือเขียนไฟล์ไม่สำเร็จ)
-     แสดงที่ได้ไปก่อน แล้วดึงข้อมูลสดจากระบบโดยตรงมาแทนเงียบ ๆ หน้าเว็บจึงไม่ค้างข้อมูลเก่า */
-  var useOrRefresh = function(d, src){
-    afterLoad(d, manual, src);
-    if(d && d.ok && dataAgeMin(d) > 20){
-      callApi('publicData=1', function(f){ if(f && f.ok) afterLoad(f, false, 'api'); }, function(){});
-    }
-  };
-  var viaFeed = function(){
-    if(!FEED_URL || !window.fetch){ viaApi(); return; }
-    loadFeed(function(d){ useOrRefresh(d, 'feed'); }, viaApi);
-  };
-  /* กดปุ่ม "ซิงก์ข้อมูลล่าสุด": ดึงข้อมูลสดจากระบบโดยตรงก่อนเสมอ ไม่ได้ค่อยใช้ไฟล์ */
-  if(manual){
-    callApi('publicData=1', function(d){ if(d && d.ok) afterLoad(d, manual, 'api'); else loadFeed(function(x){ afterLoad(x, manual, 'live'); }, viaFeed, 12000, liveUrl()); },
-            function(){ if(LIVE_SHEET_ID && window.fetch) loadFeed(function(x){ afterLoad(x, manual, 'live'); }, viaFeed, 12000, liveUrl()); else viaFeed(); }, 25000);
-    return;
+/** แสดงข้อมูล เฉพาะเมื่อใหม่กว่าหรือเท่ากับชุดที่แสดงอยู่ */
+function showData(d, manual, src, staleFallback){
+  if(d && d.ok){
+    var ms=stampMs(d);
+    if(SHOWN_MS && ms && ms < SHOWN_MS){ setSyncBusy(false); setStaleNote(''); scheduleNext(); return; }
+    if(ms) SHOWN_MS=ms;
   }
-  if(LIVE_SHEET_ID && window.fetch){
-    loadFeed(function(d){ useOrRefresh(d, 'live'); }, viaFeed, 12000, liveUrl());
-    return;
+  afterLoad(d, manual, src);
+  setStaleNote(staleFallback ? 'old' : '', d);
+}
+
+/** ป้ายบอกสถานะความสดของข้อมูล */
+function setStaleNote(kind, d){
+  var el=$('staleNote');
+  if(!el){
+    el=document.createElement('div'); el.id='staleNote'; el.className='stale-note';
+    var anchor=$('pillUpdated'); (anchor&&anchor.parentNode ? anchor.parentNode : document.body).appendChild(el);
   }
-  if(FEED_URL && window.fetch){ viaFeed(); return; }
-  callApi('publicData=1', function(d){
-    afterLoad(d, manual);
-  }, function(msg){
-    afterFail(msg);
-  });
+  if(!kind){ el.style.display='none'; return; }
+  el.style.display='';
+  el.className='stale-note'+(kind==='old'?' old':'');
+  el.textContent = kind==='loading'
+    ? 'กำลังดึงข้อมูลล่าสุด…'
+    : ('ข้อมูลนี้เป็นของ '+((d&&d.cachedAt)||'')+' ยังเชื่อมต่อระบบเพื่อดึงข้อมูลล่าสุดไม่ได้ จะลองใหม่อัตโนมัติ');
 }
 
 var DATA_SRC='';
